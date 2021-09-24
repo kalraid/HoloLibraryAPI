@@ -5,9 +5,8 @@ import falcon
 
 from sqlalchemy.orm.exc import NoResultFound
 from cerberus import Validator
-from cerberus.errors import ValidationError
 
-from app import log
+import log
 from app.api.common import BaseResource
 from app.utils.hooks import auth_required
 from app.utils.auth import encrypt_token, hash_password, verify_password, uuid

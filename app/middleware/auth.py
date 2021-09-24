@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from app import log
+import log
 from app.utils.auth import decrypt_token
 from app.errors import UnauthorizedError
 

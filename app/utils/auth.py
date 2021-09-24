@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 
 import bcrypt
 import shortuuid
@@ -8,6 +9,10 @@ from itsdangerous.timed import BadTimeSignature, SignatureExpired
 from cryptography.fernet import Fernet, InvalidToken
 
 from app.config import SECRET_KEY, TOKEN_EXPIRES, UUID_LEN, UUID_ALPHABET
+
+logging.error("-----------------------")
+logging.error(SECRET_KEY)
+logging.error("-----------------------")
 
 app_secret_key = Fernet(SECRET_KEY)
 

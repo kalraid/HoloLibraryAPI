@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import falcon
 import sqlalchemy.orm.scoping as scoping
 from sqlalchemy.exc import SQLAlchemyError
 
-from app import log
+import log
 from app import config
 from app.errors import DatabaseError, ERR_DATABASE_ROLLBACK
 

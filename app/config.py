@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import logging
 import os
 import configparser
 from itertools import chain
@@ -14,11 +14,14 @@ TOKEN_EXPIRES = 3600
 
 APP_ENV = os.environ.get("APP_ENV") or "local"  # or 'live' to load live
 INI_FILE = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)), "../conf/{}.ini".format(APP_ENV)
+    os.path.dirname(os.path.realpath(__file__)), "config\{}.ini".format(APP_ENV)
 )
+
 
 CONFIG = configparser.ConfigParser()
 CONFIG.read(INI_FILE)
+
+
 POSTGRES = CONFIG["postgres"]
 if APP_ENV == "dev" or APP_ENV == "live":
     DB_CONFIG = (

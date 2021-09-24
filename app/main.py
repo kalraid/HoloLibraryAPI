@@ -2,7 +2,7 @@
 
 import falcon
 
-from app import log
+import log
 from app.middleware import AuthHandler, JSONTranslator, DatabaseSessionManager
 from app.database import db_session, init_session
 

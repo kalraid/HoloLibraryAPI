@@ -4,7 +4,7 @@ from sqlalchemy import Column, Table, PrimaryKeyConstraint, DateTime, func
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.ext.declarative import as_declarative
 
-from app import log
+import log
 from app.utils import alchemy
 
 LOG = log.get_logger()

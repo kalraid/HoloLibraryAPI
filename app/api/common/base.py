@@ -8,7 +8,7 @@ try:
 except ImportError:
     OrderedDict = dict
 
-from app import log
+import log
 from app.utils.alchemy import new_alchemy_encoder
 from app.config import BRAND_NAME, POSTGRES
 from app.database import engine

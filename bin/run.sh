@@ -2,8 +2,10 @@
 export APP_ENV="local"
 
 function start () {
-    source .venv/bin/activate
-    gunicorn -b 127.0.0.1:5000 --reload app.main:application
+    #source .venv/bin/activate
+    #gunicorn -b 127.0.0.1:5000 --reload app.main:application
+    waitress-serve --listen=*:8000 app.main:application
+
 }
 
 function stop () {
