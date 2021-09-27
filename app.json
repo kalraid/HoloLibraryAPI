@@ -1,0 +1,5 @@
+{
+  "name": "Hololibrary REST API",
+  "repository": "https://github.com/kalraid/HoloLibraryAPI",
+  "keywords": ["python", "falcon", "mysql", "sqlalchemy"]
+}
