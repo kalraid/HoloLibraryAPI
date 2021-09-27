@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-from .users import Collection, Item
+from app.api.v1.user.users import Collection, Item

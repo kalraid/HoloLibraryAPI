@@ -18,22 +18,22 @@ INI_FILE = os.path.join(
 )
 
 
-CONFIG = configparser.ConfigParser()
+CONFIG = configparser.ConfigParser(interpolation=None)
 CONFIG.read(INI_FILE)
 
 
-POSTGRES = CONFIG["postgres"]
-if APP_ENV == "dev" or APP_ENV == "live":
-    DB_CONFIG = (
-        POSTGRES["user"],
-        POSTGRES["password"],
-        POSTGRES["host"],
-        POSTGRES["database"],
-    )
-    DATABASE_URL = "postgresql+psycopg2://%s:%s@%s/%s" % DB_CONFIG
-else:
-    DB_CONFIG = (POSTGRES["host"], POSTGRES["database"])
-    DATABASE_URL = "postgresql+psycopg2://%s/%s" % DB_CONFIG
+MYSQL = CONFIG["mysql"]
+
+DB_CONFIG = (
+    MYSQL["user"],
+    MYSQL["password"],
+    MYSQL["host"],
+    MYSQL["database"]
+)
+logging.error(DB_CONFIG)
+
+
+DATABASE_URL = "mysql+pymysql://%s:%s@%s/%s?charset=utf8mb4" % DB_CONFIG
 
 DB_ECHO = True if CONFIG["database"]["echo"] == "yes" else False
 DB_AUTOCOMMIT = True

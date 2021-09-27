@@ -2,7 +2,7 @@
 
 from sqlalchemy import Column
 from sqlalchemy import String, Integer, LargeBinary
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.mysql import JSON
 
 from app.model import Base
 from app.config import UUID_LEN
@@ -14,7 +14,7 @@ class User(Base):
     username = Column(String(20), nullable=False)
     email = Column(String(320), unique=True, nullable=False)
     password = Column(String(80), nullable=False)
-    info = Column(JSONB, nullable=True)
+    info = Column(JSON, nullable=True)
     token = Column(String(255), nullable=False)
 
     # intentionally assigned for user related service such as resetting password: kind of internal user secret key
