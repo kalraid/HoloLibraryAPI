@@ -8,6 +8,7 @@ from app.database import db_session, init_session
 
 from app.api.common import base
 from app.api.v1.user import users
+from app.api.v1.static import youtube
 from app.errors import AppError
 
 LOG = log.get_logger()
@@ -23,7 +24,8 @@ class App(falcon.API):
         self.add_route("/v1/users/{user_id}", users.Item())
         self.add_route("/v1/users/self/login", users.Self())
 
-        self.add_route("/v1/youtube/static/contact/{user_id}", users.Self())
+        self.add_route("/v1/users/static/static/{user_id}", youtube.Item())
+        self.add_route("/v1/users/static/static", youtube.Collection())
 
         self.add_error_handler(AppError, AppError.handle)
 

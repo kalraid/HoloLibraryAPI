@@ -2,6 +2,7 @@
 
 import re
 import falcon
+import requests
 
 from sqlalchemy.orm.exc import NoResultFound
 from cerberus import Validator
@@ -39,46 +40,11 @@ FIELDS = {
     "info": {"type": "dict", "required": False},
 }
 
-def contact(req, res, resource, params):
-    return 0;
-
-def validate_user_create(req, res, resource, params):
-    schema = {
-        "username": FIELDS["username"],
-        "email": FIELDS["email"],
-        "password": FIELDS["password"],
-        "info": FIELDS["info"],
-    }
-
-    v = Validator(schema)
-    if not v.validate(req.context["data"]):
-        raise InvalidParameterError(v.errors)
-
-
 class Collection(BaseResource):
     """
-    Handle for endpoint: /v1/users
+    Handle for endpoint: /v1/users/static/youtube
     """
 
-    @falcon.before(validate_user_create)
-    def on_post(self, req, res):
-        session = req.context["session"]
-        user_req = req.context["data"]
-        if user_req:
-            user = User()
-            user.username = user_req["username"]
-            user.email = user_req["email"]
-            user.password = hash_password(user_req["password"]).decode("utf-8")
-            user.info = user_req["info"] if "info" in user_req else None
-            sid = uuid()
-            user.sid = sid
-            user.token = encrypt_token(sid).decode("utf-8")
-            session.add(user)
-            self.on_success(res, None)
-        else:
-            raise InvalidParameterError(req.context["data"])
-
-    @falcon.before(auth_required)
     def on_get(self, req, res):
         session = req.context["session"]
         user_dbs = session.query(User).all()
@@ -88,24 +54,27 @@ class Collection(BaseResource):
         else:
             raise AppError()
 
-    @falcon.before(auth_required)
-    def on_put(self, req, res):
-        pass
-
 
 class Item(BaseResource):
     """
-    Handle for endpoint: /v1/users/{user_id}
+    Handle for endpoint: /v1/users/static/youtube/{user_id}
     """
 
-    @falcon.before(auth_required)
+    #@falcon.before(auth_required)
     def on_get(self, req, res, user_id):
-        session = req.context["session"]
-        try:
-            user_db = User.find_one(session, user_id)
-            self.on_success(res, user_db.to_dict())
-        except NoResultFound:
-            raise UserNotExistsError("user id: %s" % user_id)
+
+        ## 홀로애들 채널 목록 DB ( 채널 명, 채널 ID, 버튜버 key, )
+        # https://developers.google.com/youtube/v3/docs/subscriptions/list?hl=ko&apix_params=%7B%22part%22%3A%5B%22id%2C%20snippet%22%5D%2C%22forChannelId%22%3A%22UC7fk0CB07ly8oSl0aqKkqFg%2CUCp6993wxpyDPHUpavwDFqgg%2CUCoSrY_IQQVpmIRZ9Xf-y93g%2CUCyl1z3jo3XHR1riLFKG5UAg%2CUCL_qhgtOy0dy1Agp8vkySQg%2CUCHsx4Hqa-1ORjQTh9TYDhww%2CUC8rcEBzJSleTkf_-agPM20g%2CUCsUj0dszADCGbF3gNrQEuSQ%2CUC3n5uGu18FoCy23ggWWp8tA%2CUCmbs8T6MWqUHP1tIQvSgKrg%2CUCO_aKKYxn4tvrqPjcTzZ6EQ%2CUCgmPnx-EEeOrZSg5Tiw7ZRQ%2CUCp6993wxpyDPHUpavwDFqgg%22%2C%22maxResults%22%3A100%2C%22mine%22%3Atrue%7D&apix=true#try-it
+
+        url = "https://www.googleapis.com/youtube/v3/subscriptions" \
+              + "mine=true"+"&"+"forChannelId="+"UC7fk0CB07ly8oSl0aqKkqFg%2CUCp6993wxpyDPHUpavwDFqgg"+"&part=id%2C%20snippet"+"&"+"key="+"AIzaSyAa8yy0GdcGPHdtD083HiGGx_S0vMPScDM"
+        requests.post('https://www.googleapis.com/youtube/v3/subscriptions', )
+        user_id
+        # try:
+        #     user_db = User.find_one(session, user_id)
+        #     self.on_success(res, user_db.to_dict())
+        # except NoResultFound:
+        #     raise UserNotExistsError("user id: %s" % user_id)
 
 
 class Self(BaseResource):
