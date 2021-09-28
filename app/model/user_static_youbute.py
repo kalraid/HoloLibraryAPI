@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import Column
-from sqlalchemy import String, Integer, LargeBinary
+from sqlalchemy import String, Integer, LargeBinary, DATE
 from sqlalchemy.dialects.mysql import JSON
 
 from app.model import Base
@@ -11,21 +11,15 @@ from app.utils import alchemy
 
 class UserStaticYoutube(Base):
     user_id = Column(Integer, primary_key=True)
-    username = Column(String(20), nullable=False)
-    email = Column(String(320), unique=True, nullable=False)
-    password = Column(String(80), nullable=False)
-    info = Column(JSON, nullable=True)
-    token = Column(String(255), nullable=False)
+    member_name = Column(String(80), nullable=False)
+    sub_date = Column(DATE, nullable=True)
 
-    # intentionally assigned for user related service such as resetting password: kind of internal user secret key
-    sid = Column(String(UUID_LEN), nullable=False)
 
     def __repr__(self):
-        return "<User(name='%s', email='%s', token='%s', info='%s')>" % (
-            self.username,
-            self.email,
-            self.token,
-            self.info,
+        return "<UserStaticYoutube(user_id='%s', member_name='%s', sub_date='%s')>" % (
+            self.user_id,
+            self.member_name,
+            self.sub_date,
         )
 
     @classmethod
@@ -33,9 +27,24 @@ class UserStaticYoutube(Base):
         return UserStaticYoutube.user_id
 
     @classmethod
-    def find_by_email(cls, session, email):
-        return session.query(UserStaticYoutube).filter(UserStaticYoutube.email == email).one()
+    def finds_static(cls, session, user_id):
+        return session.query(UserStaticYoutube).filter(UserStaticYoutube.user_id == user_id).list()
 
-    FIELDS = {"username": str, "email": str, "info": alchemy.passby, "token": str}
+    @classmethod
+    def finds_static(cls, session, user_id, member_name):
+        return session.query(UserStaticYoutube).filter(UserStaticYoutube.user_id == user_id).\
+            filter(UserStaticYoutube.member_name == member_name).list()
+
+    @classmethod
+    def finds_first(cls, session, user_id, member_name):
+        return session.query(UserStaticYoutube).filter(UserStaticYoutube.user_id == user_id).\
+            filter(UserStaticYoutube.member_name == member_name).order_by(UserStaticYoutube.sub_date).first()
+
+    @classmethod
+    def get_age(cls, session, user_id, member_name):
+        return session.query(UserStaticYoutube).filter(UserStaticYoutube.user_id == user_id).\
+            filter(UserStaticYoutube.member_name == member_name).one()
+
+    FIELDS = {"user_id": str, "member_name": str, "sub_date": DATE}
 
     FIELDS.update(Base.FIELDS)

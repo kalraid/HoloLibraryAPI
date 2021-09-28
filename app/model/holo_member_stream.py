@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import Column
-from sqlalchemy import String, Integer, LargeBinary
+from sqlalchemy import String, Integer, LargeBinary, DATE
 from sqlalchemy.dialects.mysql import JSON
 
 from app.model import Base
@@ -10,32 +10,30 @@ from app.utils import alchemy
 
 
 class HoloMemberStream(Base):
-    user_id = Column(Integer, primary_key=True)
-    username = Column(String(20), nullable=False)
-    email = Column(String(320), unique=True, nullable=False)
-    password = Column(String(80), nullable=False)
-    info = Column(JSON, nullable=True)
-    token = Column(String(255), nullable=False)
-
-    # intentionally assigned for user related service such as resetting password: kind of internal user secret key
-    sid = Column(String(UUID_LEN), nullable=False)
+    id = Column(Integer, primary_key=True)
+    name = Column(String(300), nullable=False)
+    member_name = Column(String(80), nullable=False) ## == holo_member.name
+    start_date = Column(DATE, nullable=True)
+    end_date = Column(DATE, nullable=True)
 
     def __repr__(self):
-        return "<User(name='%s', email='%s', token='%s', info='%s')>" % (
-            self.username,
-            self.email,
-            self.token,
-            self.info,
+        return "<HoloMemberStream(id='%s', name='%s', member_name='%s', start_date='%s', end_date='%s')>" % (
+            self.id,
+            self.name,
+            self.member_name,
+            self.start_date,
+            self.end_date,
         )
 
     @classmethod
     def get_id(cls):
-        return HoloMemberStream.user_id
+        return HoloMemberStream.id
 
     @classmethod
-    def find_by_email(cls, session, email):
-        return session.query(HoloMemberStream).filter(HoloMemberStream.email == email).one()
+    def get_name(cls):
+        return HoloMemberStream.name
 
-    FIELDS = {"username": str, "email": str, "info": alchemy.passby, "token": str}
+
+    FIELDS = {"id": str, "email": str, "name": str, "start_date": DATE,"end_date": DATE }
 
     FIELDS.update(Base.FIELDS)
