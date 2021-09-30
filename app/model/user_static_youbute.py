@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import Column
-from sqlalchemy import String, Integer, LargeBinary, DATE
-from sqlalchemy.dialects.mysql import JSON
+from sqlalchemy import String, Integer, DATE
 
 from app.model import Base
-from app.config import UUID_LEN
-from app.utils import alchemy
 
 
 class UserStaticYoutube(Base):
+    __name__ == 'user_static_youtube'
+
     user_id = Column(Integer, primary_key=True)
+    channel_id = Column(Integer, nullable=False, unique=True)
     member_name = Column(String(80), nullable=False)
     sub_date = Column(DATE, nullable=True)
 
-
     def __repr__(self):
-        return "<UserStaticYoutube(user_id='%s', member_name='%s', sub_date='%s')>" % (
+        return "<UserStaticYoutube(user_id='%s', channel_id,='%s' member_name='%s', sub_date='%s')>" % (
             self.user_id,
+            self.channel_id,
             self.member_name,
             self.sub_date,
         )
@@ -45,6 +45,6 @@ class UserStaticYoutube(Base):
         return session.query(UserStaticYoutube).filter(UserStaticYoutube.user_id == user_id).\
             filter(UserStaticYoutube.member_name == member_name).one()
 
-    FIELDS = {"user_id": str, "member_name": str, "sub_date": DATE}
+    FIELDS = {"user_id": str, "channel_id": str, "member_name": str, "sub_date": DATE}
 
     FIELDS.update(Base.FIELDS)

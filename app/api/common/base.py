@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import falcon
 import json
+
+import falcon
 
 try:
     from collections import OrderedDict
@@ -58,7 +59,11 @@ class BaseResource(object):
             raise NotSupportedError(method="GET", url=req.path)
 
     def on_post(self, req, res):
-        raise NotSupportedError(method="POST", url=req.path)
+        if req.path == "/":
+            res.status = falcon.HTTP_200
+            res.body = self.to_json(self.HELLO_WORLD)
+        else:
+            raise NotSupportedError(method="POST", url=req.path)
 
     def on_put(self, req, res):
         raise NotSupportedError(method="PUT", url=req.path)

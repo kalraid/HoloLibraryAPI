@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from sqlalchemy import Column, Table, PrimaryKeyConstraint, DateTime, func
-from sqlalchemy.ext.declarative import declarative_base, declared_attr
+from sqlalchemy import Column, Table, PrimaryKeyConstraint, DateTime, func, String
 from sqlalchemy.ext.declarative import as_declarative
+from sqlalchemy.ext.declarative import declarative_base, declared_attr
 
 import log
 from app.utils import alchemy
@@ -12,6 +12,8 @@ LOG = log.get_logger()
 
 @as_declarative()
 class BaseModel(object):
+    isUse = Column(String(1), default='Y', nullable=False)
+    isDelete = Column(String(1), default='N', nullable=False)
     created = Column(DateTime, default=func.now())
     modified = Column(DateTime, default=func.now(), onupdate=func.now())
 
@@ -60,9 +62,11 @@ class BaseModel(object):
         )
 
     FIELDS = {
+        "isUse": str,
+        "isDelete": str,
         "created": alchemy.datetime_to_timestamp,
         "modified": alchemy.datetime_to_timestamp,
-    }
 
+    }
 
 Base = declarative_base(cls=BaseModel)

@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import Column
-from sqlalchemy import String, Integer, LargeBinary, DATE
-from sqlalchemy.dialects.mysql import JSON
+from sqlalchemy import String, Integer
 
 from app.model import Base
-from app.config import UUID_LEN
-from app.utils import alchemy
 
 
 class HoloMemberTwitterTag(Base):
+    __name__ == 'holo_member_twitter_tag'
+
     id = Column(Integer, primary_key=True)
-    member_name = Column(String(80), unique=True, nullable=False) ## == holo_member.name
+    member_name = Column(String(80), unique=True, nullable=False)  ## == holo_member.name
     name = Column(String(80), nullable=False)
     type = Column(String(80), nullable=False)
 

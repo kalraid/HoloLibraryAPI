@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import Column
-from sqlalchemy import String, Integer, LargeBinary, DATE
+from sqlalchemy import String, Integer, DATE
 from sqlalchemy.dialects.mysql import JSON
 
 from app.model import Base
-from app.config import UUID_LEN
 from app.utils import alchemy
 
 
 class HoloMemberStreamReply(Base):
+    __name__ == 'holo_member_stream_reply'
+
     id = Column(Integer, primary_key=True)
     stream_id = Column(Integer, nullable=False)
     content = Column(JSON, nullable=False)

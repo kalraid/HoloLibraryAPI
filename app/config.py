@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
+import configparser
 import logging
 import os
-import configparser
-from itertools import chain
-
 
 BRAND_NAME = "Falcon REST API Template"
 
@@ -37,5 +35,5 @@ DATABASE_URL = "mysql+pymysql://%s:%s@%s/%s?charset=utf8mb4" % DB_CONFIG
 
 DB_ECHO = True if CONFIG["database"]["echo"] == "yes" else False
 DB_AUTOCOMMIT = True
-
+logging.error(CONFIG["logging"]["level"])
 LOG_LEVEL = CONFIG["logging"]["level"]

@@ -1,18 +1,12 @@
 # -*- coding: utf-8 -*-
-import logging
 
 import bcrypt
 import shortuuid
-
-from itsdangerous.timed import TimestampSigner
-from itsdangerous.timed import BadTimeSignature, SignatureExpired
 from cryptography.fernet import Fernet, InvalidToken
+from itsdangerous.timed import BadTimeSignature, SignatureExpired
+from itsdangerous.timed import TimestampSigner
 
 from app.config import SECRET_KEY, TOKEN_EXPIRES, UUID_LEN, UUID_ALPHABET
-
-logging.error("-----------------------")
-logging.error(SECRET_KEY)
-logging.error("-----------------------")
 
 app_secret_key = Fernet(SECRET_KEY)
 
@@ -55,6 +49,6 @@ def verify_timed_token(token):
     s = TimestampSigner(SECRET_KEY)
     try:
         data = s.loads(token)
-    except (SignatureExpired, BadSignature):
+    except (SignatureExpired, BadTimeSignature):
         return None
     return data

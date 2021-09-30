@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import Column
-from sqlalchemy import String, Integer, LargeBinary
-from sqlalchemy.dialects.mysql import JSON
+from sqlalchemy import String
 
 from app.model import Base
-from app.config import UUID_LEN
-from app.utils import alchemy
+
 
 # SQLALchmy 관련링크
 ## https://edykim.com/ko/post/getting-started-with-sqlalchemy-part-1/
@@ -14,6 +12,8 @@ from app.utils import alchemy
 ## https://blog.hongminhee.org/2013/10/30/65522658529/
 
 class HoloCompany(Base):
+    __name__ == 'holo_company'
+
     name = Column(String(200), primary_key=True)
 
     def __repr__(self):

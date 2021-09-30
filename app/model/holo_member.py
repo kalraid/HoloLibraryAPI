@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-from math import comb
 
 from sqlalchemy import Column
-from sqlalchemy import String, Integer, LargeBinary
+from sqlalchemy import String
 from sqlalchemy.dialects.mysql import JSON
 
 from app.model import Base
-from app.config import UUID_LEN
 from app.utils import alchemy
 
 
 class HoloMember(Base):
+    __name__ == 'holo_member'
+
     fullname = Column(String(300), nullable=False, primary_key=True)
     name = Column(String(80), nullable=False)
-    alias = Column(JSON, nullable=True) # TODO need to divde table
+    alias = Column(JSON, nullable=True)  # TODO need to divde table
     company = Column(String(200), nullable=False)
 
     def __repr__(self):

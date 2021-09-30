@@ -31,4 +31,5 @@ def init_session():
 
     from app.model import Base
 
+    # Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)

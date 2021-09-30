@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import Column
-from sqlalchemy import String, Integer, LargeBinary
-from sqlalchemy.dialects.mysql import JSON
+from sqlalchemy import String
 
 from app.model import Base
-from app.config import UUID_LEN
-from app.utils import alchemy
 
 
 class HoloMemberCh(Base):
+    __name__ == 'holo_member_channel'
+
     channel_id = Column(String(400), primary_key=True)
-    channel_name = Column(String(200), nullable=False, unique=True)
-    member_name = Column(String(80), unique=True, nullable=False) ## == holo_member.name
-    company_name = Column(String(200), unique=True, nullable=False) ## == holo_company.name
+    channel_name = Column(String(200), unique=True, nullable=False)
+    member_name = Column(String(80), nullable=False)  ## == holo_member.name
+    company_name = Column(String(200), nullable=False)  ## == holo_company.name
 
     def __repr__(self):
         return "<HoloMemberCh(channel_id='%s', channel_name='%s', member_name='%s')>" % (

@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import Column
-from sqlalchemy import String, Integer, LargeBinary, DATE
-from sqlalchemy.dialects.mysql import JSON
+from sqlalchemy import String, Integer, DATE
 
 from app.model import Base
-from app.config import UUID_LEN
-from app.utils import alchemy
 
 
 class HoloMemberStream(Base):
+    __name__ == 'holo_member_stream'
+
     id = Column(Integer, primary_key=True)
     name = Column(String(300), nullable=False)
-    member_name = Column(String(80), nullable=False) ## == holo_member.name
+    member_name = Column(String(80), nullable=False)  ## == holo_member.name
     start_date = Column(DATE, nullable=True)
     end_date = Column(DATE, nullable=True)
 
