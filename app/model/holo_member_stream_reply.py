@@ -11,15 +11,15 @@ from app.utils import alchemy
 class HoloMemberStreamReply(Base):
     __name__ == 'holo_member_stream_reply'
 
-    id = Column(Integer, primary_key=True)
+    index = Column(Integer, primary_key=True)
     stream_id = Column(Integer, nullable=False)
     content = Column(JSON, nullable=False)
     reply_user = Column(String(80), nullable=False)
     date = Column(DATE, nullable=True)
 
     def __repr__(self):
-        return "<HoloMemberStreamReply(id='%s', stream_id='%s', content='%s', reply_user='%s', date='%s')>" % (
-            self.id,
+        return "<HoloMemberStreamReply(index='%s', stream_id='%s', content='%s', reply_user='%s', date='%s')>" % (
+            self.index,
             self.stream_id,
             self.content,
             self.date,
@@ -27,7 +27,7 @@ class HoloMemberStreamReply(Base):
 
     @classmethod
     def get_id(cls):
-        return HoloMemberStreamReply.id
+        return HoloMemberStreamReply.index
 
     FIELDS = {"id": str, "stream_id": str, "content": alchemy.passby, "reply_user": str, "date":DATE}
 

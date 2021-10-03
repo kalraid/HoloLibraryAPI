@@ -27,11 +27,11 @@ class HoloMemberCh(Base):
 
     @classmethod
     def get_ids(cls, session):
-        return session.query(HoloMemberCh.channel_id).list()
+        return session.query(HoloMemberCh.channel_id).all()
 
     @classmethod
     def get_ids(cls, session, company):
-        return session.query(HoloMemberCh.channel_id).filter(HoloMemberCh.company_name == company).list()
+        return session.query(HoloMemberCh.channel_id).filter(HoloMemberCh.company_name == company).all()
 
     FIELDS = {"channel_id": str, "channel_name": str, "member_name": str, "company_name": str}
 

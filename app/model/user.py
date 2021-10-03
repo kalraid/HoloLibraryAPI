@@ -8,7 +8,7 @@ from app.model import Base
 
 
 class User(Base):
-    user_id = Column(Integer, primary_key=True)
+    user_id = Column(String(60), primary_key=True)
     username = Column(String(20), nullable=False)
     email = Column(String(320), unique=True, nullable=False)
     access_token = Column(String(520), nullable=False)

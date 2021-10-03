@@ -47,11 +47,14 @@ class Auth(BaseResource):
                 user.user_name = user_req["userId"]
                 user.access_token = user_req["accessToken"]
 
+                LOG.info(user.__repr__())
                 try:
                     user_db = session.query(User).filter(User.email == user.email).one()
+                    LOG.info(user_db.__repr__)
                 except NoResultFound:
                     user_db = None
 
+                LOG.info(session.__repr__)
                 if not user_db:
                     session.add(user)
 

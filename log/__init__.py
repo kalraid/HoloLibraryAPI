@@ -6,9 +6,9 @@ import sys
 from app import config
 
 logging.basicConfig(level=config.LOG_LEVEL)  # 해당 구문 적용 안됨, 그래서 logging 기본 레벨인 warn이 적용됨
-logging.info('logging level setting : ', config.LOG_LEVEL)
+logging.info('logging level setting : ',config.LOG_LEVEL)
 LOG = logging.getLogger("API")
-LOG.setLevel(config.LOG_LEVEL)  # 따라서 LOGGER에만 따로 config 레벨을 적용
+LOG.setLevel(config.LOG_LEVEL) # 따라서 LOGGER에만 따로 config 레벨을 적용
 LOG.propagate = False
 
 INFO_FORMAT = "[%(asctime)s] [%(process)d] [%(levelname)s] %(message)s"

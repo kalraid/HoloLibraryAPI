@@ -34,7 +34,7 @@ class HoloMember(Base):
 
     @classmethod
     def finds_by_company(cls, session, company):
-        return session.query(HoloMember).filter(HoloMember.company == company).list()
+        return session.query(HoloMember).filter(HoloMember.company == company).all()
 
     FIELDS = {"name": str, "fullname": str, "alias": alchemy.passby, "company": str}
 
