@@ -13,9 +13,6 @@ class User(Base):
     email = Column(String(320), unique=True, nullable=False)
     access_token = Column(String(520), nullable=False)
 
-    # intentionally assigned for user related service such as resetting password: kind of internal user secret key
-    sid = Column(String(UUID_LEN), nullable=False)
-
     def __repr__(self):
         return "<User(name='%s', email='%s', access_token='%s')>" % (
             self.username,

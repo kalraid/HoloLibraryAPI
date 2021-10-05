@@ -33,15 +33,19 @@ class Collection(BaseResource):
     """
     def on_post(self, req, res):
         session = req.context["session"]
-        user_req = req.context["data"]
+        user_req = req.context["data"]["userInfo"]
         if user_req:
             user = User()
-            user.user_id = user_req["user_id"]
-            user.user_name = user_req["user_name"]
-            user.email = user_req["email"]
-            user.access_token = user_req["access_token"]
+            user.user_id = user_req["userId"]
+            user.username = user_req["userId"]
+            user.email = user_req["userEmail"]
+            user.access_token = user_req["accessToken"]
 
-            user_db = session.query(User).filter(User.email == user.email).one()
+            user_db = None
+            try:
+                user_db = session.query(User).filter(User.email == user.email).one()
+            except:
+                LOG.info(user.__repr__())
 
             if not user_db:
                 session.add(user)
@@ -49,8 +53,8 @@ class Collection(BaseResource):
             else:
                 user_db.access_token = user.access_token
                 session.update(user_db)
-
-            t1 = AnalysisSubscribeThread(user, session)
+            LOG.info("123")
+            t1 = AnalysisSubscribeThread(user.access_token, session)
             t1.start()
 
             self.on_success(res, None)
