@@ -25,6 +25,7 @@ class DatabaseSessionManager(object):
         """
         Handle post-processing of the response (after routing).
         """
+        # session = req.context["session"]
         session = req.context["session"]
 
         if config.DB_AUTOCOMMIT:
