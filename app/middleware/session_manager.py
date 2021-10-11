@@ -25,19 +25,23 @@ class DatabaseSessionManager(object):
         """
         Handle post-processing of the response (after routing).
         """
-        # session = req.context["session"]
-        session = req.context["session"]
 
-        if config.DB_AUTOCOMMIT:
+        if req.method is not "OPTIONS":
             try:
-                session.commit()
-            except SQLAlchemyError as ex:
-                session.rollback()
-                raise DatabaseError(ERR_DATABASE_ROLLBACK, ex.args, ex.params)
+                session = req.context["session"]
 
-        if self._scoped:
-            # remove any database-loaded state from all current objects
-            # so that the next access of any attribute, or any query execution will retrieve new state
-            session.remove()
-        else:
-            session.close()
+                if config.DB_AUTOCOMMIT:
+                    try:
+                        session.commit()
+                    except SQLAlchemyError as ex:
+                        session.rollback()
+                        raise DatabaseError(ERR_DATABASE_ROLLBACK, ex.args, ex.params)
+
+                if self._scoped:
+                    # remove any database-loaded state from all current objects
+                    # so that the next access of any attribute, or any query execution will retrieve new state
+                    session.remove()
+                else:
+                    session.close()
+            except KeyError as ex:
+                LOG.error('not in session ')

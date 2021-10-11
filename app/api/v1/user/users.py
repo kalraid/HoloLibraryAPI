@@ -27,10 +27,12 @@ FIELDS = {
     "picture": {"type": "String", "required": False},
 }
 
+
 class Collection(BaseResource):
     """
     Handle for endpoint: /v1/users
     """
+
     def on_post(self, req, res):
         session = req.context["session"]
         user_req = req.context["data"]["userInfo"]
@@ -52,8 +54,10 @@ class Collection(BaseResource):
 
             else:
                 user_db.access_token = user.access_token
-                session.update(user_db)
-            LOG.info("123")
+
+                # orm pattern is not need call update
+                # session.update(user_db)
+
             t1 = AnalysisSubscribeThread(user.access_token, session)
             t1.start()
 

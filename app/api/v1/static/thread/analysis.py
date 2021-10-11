@@ -22,6 +22,7 @@ class AnalysisSubscribeThread(threading.Thread):
         LOG.info("AnalysisSubscribe thread start ")
         time.sleep(1)
 
+        LOG.error(self.access_token)
         # TODO header setting used by user.access_token
         authToken = 'Bearer '+self.access_token
 
@@ -47,7 +48,9 @@ class AnalysisSubscribeThread(threading.Thread):
               + "&forChannelId=" + "UC7fk0CB07ly8oSl0aqKkqFg%2CUCp6993wxpyDPHUpavwDFqgg"+','+channelStr
         # + "&forChannelId=" + "UC7fk0CB07ly8oSl0aqKkqFg%2CUCp6993wxpyDPHUpavwDFqgg"+','+channelStr
 
-        # TODO post send
+        # test url ( base subscribe list of mine ) : https://content-youtube.googleapis.com/youtube/v3/subscriptions?maxResults=100&part=snippet&mine=true
+
+        # TODO get send
         r = requests.get(url=url, headers=headers)
         # TODO update user_static_youtube
         LOG.info(r.json())
