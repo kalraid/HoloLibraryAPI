@@ -33,38 +33,6 @@ class Collection(BaseResource):
     Handle for endpoint: /v1/users
     """
 
-    def on_post(self, req, res):
-        session = req.context["session"]
-        user_req = req.context["data"]["userInfo"]
-        if user_req:
-            user = User()
-            user.user_id = user_req["userId"]
-            user.username = user_req["userId"]
-            user.email = user_req["userEmail"]
-            user.access_token = user_req["accessToken"]
-
-            user_db = None
-            try:
-                user_db = session.query(User).filter(User.email == user.email).one()
-            except:
-                LOG.info(user.__repr__())
-
-            if not user_db:
-                session.add(user)
-
-            else:
-                user_db.access_token = user.access_token
-
-                # orm pattern is not need call update
-                # session.update(user_db)
-
-            t1 = AnalysisSubscribeThread(user.access_token, session)
-            t1.start()
-
-            self.on_success(res, None)
-        else:
-            raise InvalidParameterError(req.context["data"])
-
     @falcon.before(auth_required)
     def on_get(self, req, res):
         session = req.context["session"]

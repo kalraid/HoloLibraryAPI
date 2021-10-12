@@ -57,10 +57,10 @@ class Auth(BaseResource):
                 # orm pattern is not need call update
                 # session.update(user_db)
 
-            t1 = AnalysisSubscribeThread(user.access_token, session)
+            t1 = AnalysisSubscribeThread(user.access_token, session, user.user_id)
             t1.start()
 
-            self.on_success(res, None)
+            self.on_success_thread(res, None)
         else:
             raise InvalidParameterError(req.context["data"])
 

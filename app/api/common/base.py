@@ -51,6 +51,17 @@ class BaseResource(object):
         obj["data"] = data
         res.body = self.to_json(obj)
 
+    def on_success_thread(self, res, data=None):
+        res.status = falcon.HTTP_202
+        meta = OrderedDict()
+        meta["code"] = 202
+        meta["message"] = "OK - thread is running"
+
+        obj = OrderedDict()
+        obj["meta"] = meta
+        obj["data"] = data
+        res.body = self.to_json(obj)
+
     def on_get(self, req, res):
         if req.path == "/":
             res.status = falcon.HTTP_200

@@ -10,15 +10,17 @@ class UserStaticYoutube(Base):
     __name__ == 'user_static_youtube'
 
     user_id = Column(String(60), primary_key=True)
-    channel_id = Column(Integer, nullable=False, unique=True)
+    channel_id = Column(String(400), nullable=False, unique=True)
     member_name = Column(String(80), nullable=False)
+    channel_name = Column(String(400), nullable=False)
     sub_date = Column(DATE, nullable=True)
 
     def __repr__(self):
-        return "<UserStaticYoutube(user_id='%s', channel_id,='%s' member_name='%s', sub_date='%s')>" % (
+        return "<UserStaticYoutube(user_id='%s', channel_id,='%s' member_name='%s',channel_name='%s', sub_date='%s')>" % (
             self.user_id,
             self.channel_id,
             self.member_name,
+            self.channel_name,
             self.sub_date,
         )
 
@@ -45,6 +47,6 @@ class UserStaticYoutube(Base):
         return session.query(UserStaticYoutube).filter(UserStaticYoutube.user_id == user_id).\
             filter(UserStaticYoutube.member_name == member_name).one()
 
-    FIELDS = {"user_id": str, "channel_id": str, "member_name": str, "sub_date": DATE}
+    FIELDS = {"user_id": str, "channel_id": str, "member_name": str, "channel_name": str,  "sub_date": DATE}
 
     FIELDS.update(Base.FIELDS)
