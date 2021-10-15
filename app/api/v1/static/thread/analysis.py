@@ -45,15 +45,14 @@ class AnalysisSubscribeThread(threading.Thread):
         channelStr = ''
         if channelList:
             for row in channelList.__iter__():
-                LOG.info(' i : ', ''.join(row[0]))
-                channelStr = channelStr + ',' + ''.join(row[0])
+                channelStr = channelStr + ',' + ''.join(row)
         else:
             channelStr = 'UCP0BspO_AMEe3aQqqpo89Dg,UC8rcEBzJSleTkf_-agPM20g,UC7fk0CB07ly8oSl0aqKkqFg,UCp6993wxpyDPHUpavwDFqgg'
             LOG.info('channelList is empty')
 
         url = "https://www.googleapis.com/youtube/v3/subscriptions" \
               + "?mine=true" + "&part=id%2C%20snippet" + "&maxResults=100" \
-              + "&forChannelId=" +"UCP0BspO_AMEe3aQqqpo89Dg" + channelStr
+              + "&forChannelId=" + "UCP0BspO_AMEe3aQqqpo89Dg" + channelStr
         # + "&forChannelId=" + "UC7fk0CB07ly8oSl0aqKkqFg%2CUCp6993wxpyDPHUpavwDFqgg"+','+channelStr
 
         # test url ( base subscribe list of mine ) : https://content-youtube.googleapis.com/youtube/v3/subscriptions?maxResults=100&part=snippet&mine=true

@@ -27,22 +27,22 @@ class DatabaseSessionManager(object):
         Handle post-processing of the response (after routing).
         """
         if req.method is not "OPTIONS":
-            if res.status is not falcon.HTTP_202:
-                try:
-                    session = req.context["session"]
-
-                    if config.DB_AUTOCOMMIT:
-                        try:
-                            session.commit()
-                        except SQLAlchemyError as ex:
+            session = req.context["session"]
+            try:
+                if config.DB_AUTOCOMMIT:
+                    try:
+                        session.commit()
+                    except SQLAlchemyError as ex:
+                        if res.status is not falcon.HTTP_202:
                             session.rollback()
-                            raise DatabaseError(ERR_DATABASE_ROLLBACK, ex.args, ex.params)
+                        raise DatabaseError(ERR_DATABASE_ROLLBACK, ex.args, ex.params)
 
+                if res.status is not falcon.HTTP_202:
                     if self._scoped:
                         # remove any database-loaded state from all current objects
                         # so that the next access of any attribute, or any query execution will retrieve new state
                         session.remove()
                     else:
                         session.close()
-                except KeyError as ex:
-                    LOG.error('not in session ')
+            except KeyError as ex:
+                LOG.error('not in session ')
