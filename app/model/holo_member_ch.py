@@ -11,14 +11,16 @@ class HoloMemberCh(Base):
 
     channel_id = Column(String(400), primary_key=True)
     channel_name = Column(String(200), unique=True, nullable=False)
+    channel_url = Column(String(400), unique=True, nullable=False)
     member_name = Column(String(80), nullable=False)  ## == holo_member.name
     company_name = Column(String(200), nullable=False)  ## == holo_company.name
 
     def __repr__(self):
-        return "<HoloMemberCh(channel_id='%s', channel_name='%s', member_name='%s')>" % (
+        return "<HoloMemberCh(channel_id='%s', channel_name='%s', member_name='%s', channel_url='%s')>" % (
             self.channel_id,
             self.channel_name,
             self.member_name,
+            self.channel_url,
         )
 
     @classmethod
@@ -33,6 +35,6 @@ class HoloMemberCh(Base):
     def get_ids(cls, session, company):
         return session.query(HoloMemberCh.channel_id).filter(HoloMemberCh.company_name == company).all()
 
-    FIELDS = {"channel_id": str, "channel_name": str, "member_name": str, "company_name": str}
+    FIELDS = {"channel_id": str, "channel_name": str, "member_name": str, "company_name": str, "channel_url": str}
 
     FIELDS.update(Base.FIELDS)

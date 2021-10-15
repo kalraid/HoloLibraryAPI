@@ -12,8 +12,6 @@ LOG = log.get_logger()
 
 class JSONTranslator(object):
     def process_request(self, req, res):
-        LOG.error(2323232323232323)
-        LOG.info(req.content_type)
         if req.content_type is not None and "json" in req.content_type:
             try:
                 raw_json = req.stream.read()

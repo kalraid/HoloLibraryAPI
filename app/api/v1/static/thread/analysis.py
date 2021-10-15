@@ -42,17 +42,18 @@ class AnalysisSubscribeThread(threading.Thread):
 
         # https://developers.google.com/youtube/v3/docs/subscriptions/list?hl=ko&apix_params=%7B%22part%22%3A%5B%22id%2C%20snippet%22%5D%2C%22forChannelId%22%3A%22UC7fk0CB07ly8oSl0aqKkqFg%2CUCp6993wxpyDPHUpavwDFqgg%2CUCoSrY_IQQVpmIRZ9Xf-y93g%2CUCyl1z3jo3XHR1riLFKG5UAg%2CUCL_qhgtOy0dy1Agp8vkySQg%2CUCHsx4Hqa-1ORjQTh9TYDhww%2CUC8rcEBzJSleTkf_-agPM20g%2CUCsUj0dszADCGbF3gNrQEuSQ%2CUC3n5uGu18FoCy23ggWWp8tA%2CUCmbs8T6MWqUHP1tIQvSgKrg%2CUCO_aKKYxn4tvrqPjcTzZ6EQ%2CUCgmPnx-EEeOrZSg5Tiw7ZRQ%2CUCp6993wxpyDPHUpavwDFqgg%22%2C%22maxResults%22%3A100%2C%22mine%22%3Atrue%7D&apix=true#try-it
 
-        LOG.info(channelList)
-
+        channelStr = ''
         if channelList:
-            channelStr = ','.join(Iterator(channelList))
+            for row in channelList.__iter__():
+                LOG.info(' i : ', ''.join(row[0]))
+                channelStr = channelStr + ',' + ''.join(row[0])
         else:
-            channelStr = 'UC7fk0CB07ly8oSl0aqKkqFg,UCp6993wxpyDPHUpavwDFqgg'
+            channelStr = 'UCP0BspO_AMEe3aQqqpo89Dg,UC8rcEBzJSleTkf_-agPM20g,UC7fk0CB07ly8oSl0aqKkqFg,UCp6993wxpyDPHUpavwDFqgg'
             LOG.info('channelList is empty')
 
         url = "https://www.googleapis.com/youtube/v3/subscriptions" \
               + "?mine=true" + "&part=id%2C%20snippet" + "&maxResults=100" \
-              + "&forChannelId=" + "UCP0BspO_AMEe3aQqqpo89Dg,UC8rcEBzJSleTkf_-agPM20g" + ',' + channelStr
+              + "&forChannelId=" +"UCP0BspO_AMEe3aQqqpo89Dg" + channelStr
         # + "&forChannelId=" + "UC7fk0CB07ly8oSl0aqKkqFg%2CUCp6993wxpyDPHUpavwDFqgg"+','+channelStr
 
         # test url ( base subscribe list of mine ) : https://content-youtube.googleapis.com/youtube/v3/subscriptions?maxResults=100&part=snippet&mine=true
