@@ -12,7 +12,7 @@ LOG = log.get_logger()
 
 @as_declarative()
 class BaseModel(object):
-    __table_args__ = {'mysql_collate': 'utf8_general_ci'}
+    __table_args__ = {'mysql_engine':'InnoDB', 'mysql_DEFAULT_CHARSET':'utf8mb4', 'mysql_COLLATE':'utf8mb4_unicode_ci'}
 
     index = Column(Integer(),  primary_key=True, unique=True, autoincrement=True)
     isUse = Column(String(1), default='Y', nullable=False)

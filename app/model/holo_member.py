@@ -9,7 +9,7 @@ from app.utils import alchemy
 
 
 class HoloMember(Base):
-    __name__ == 'holo_member'
+    __tablename__ = 'holo_member'
 
     fullname = Column(String(300), nullable=False, primary_key=True)
     name = Column(String(80), nullable=False)

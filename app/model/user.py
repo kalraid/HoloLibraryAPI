@@ -9,6 +9,9 @@ from app.model import Base
 
 
 class User(Base):
+    __tablename__ = 'user'
+
+
     user_id = Column(String(60), primary_key=True)
     username = Column(String(20), nullable=False)
     email = Column(String(320), unique=True, nullable=False)

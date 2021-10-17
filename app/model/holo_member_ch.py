@@ -7,7 +7,7 @@ from app.model import Base
 
 
 class HoloMemberCh(Base):
-    __name__ == 'holo_member_channel'
+    __tablename__ = 'holo_member_channel'
 
     channel_id = Column(String(400), primary_key=True)
     channel_name = Column(String(200), unique=True, nullable=False)
