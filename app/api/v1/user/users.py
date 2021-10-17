@@ -1,80 +1,37 @@
 # -*- coding: utf-8 -*-
 
 import re
-import falcon
 
+import falcon
 from sqlalchemy.orm.exc import NoResultFound
-from cerberus import Validator
 
 import log
 from app.api.common import BaseResource
-from app.utils.hooks import auth_required
-from app.utils.auth import encrypt_token, hash_password, verify_password, uuid
-from app.model import User
+from app.api.v1.static.thread.analysis import AnalysisSubscribeThread
 from app.errors import (
     AppError,
     InvalidParameterError,
     UserNotExistsError,
     PasswordNotMatch,
 )
+from app.model import User
+from app.utils.auth import verify_password
+from app.utils.hooks import auth_required
 
 LOG = log.get_logger()
 
-
 FIELDS = {
-    "username": {"type": "string", "required": True, "minlength": 4, "maxlength": 20},
-    "email": {
-        "type": "string",
-        "regex": "[a-zA-Z0-9._-]+@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,4}",
-        "required": True,
-        "maxlength": 320,
-    },
-    "password": {
-        "type": "string",
-        "regex": "[0-9a-zA-Z]\w{3,14}",
-        "required": True,
-        "minlength": 8,
-        "maxlength": 64,
-    },
-    "info": {"type": "dict", "required": False},
+    "accessToken": {"type": "string", "required": True},
+    "userId": {"type": "string", "required": True, },
+    "userEmail": {"type": "string", "required": True, },
+    "picture": {"type": "String", "required": False},
 }
-
-
-def validate_user_create(req, res, resource, params):
-    schema = {
-        "username": FIELDS["username"],
-        "email": FIELDS["email"],
-        "password": FIELDS["password"],
-        "info": FIELDS["info"],
-    }
-
-    v = Validator(schema)
-    if not v.validate(req.context["data"]):
-        raise InvalidParameterError(v.errors)
 
 
 class Collection(BaseResource):
     """
     Handle for endpoint: /v1/users
     """
-
-    @falcon.before(validate_user_create)
-    def on_post(self, req, res):
-        session = req.context["session"]
-        user_req = req.context["data"]
-        if user_req:
-            user = User()
-            user.username = user_req["username"]
-            user.email = user_req["email"]
-            user.password = hash_password(user_req["password"]).decode("utf-8")
-            user.info = user_req["info"] if "info" in user_req else None
-            sid = uuid()
-            user.sid = sid
-            user.token = encrypt_token(sid).decode("utf-8")
-            session.add(user)
-            self.on_success(res, None)
-        else:
-            raise InvalidParameterError(req.context["data"])
 
     @falcon.before(auth_required)
     def on_get(self, req, res):

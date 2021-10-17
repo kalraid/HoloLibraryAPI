@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 
 import json
+
 import falcon
 
+import log
 from app.errors import InvalidParameterError
+
+LOG = log.get_logger()
 
 
 class JSONTranslator(object):
     def process_request(self, req, res):
-        if req.content_type == 'application/json':
+        if req.content_type is not None and "json" in req.content_type:
             try:
                 raw_json = req.stream.read()
             except Exception:
@@ -20,5 +24,4 @@ class JSONTranslator(object):
                 raise InvalidParameterError('No JSON object could be decoded or Malformed JSON')
             except UnicodeDecodeError:
                 raise InvalidParameterError('Cannot be decoded by utf-8')
-        else:
-            req.context['data'] = None
+

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from sqlalchemy import Column, Table, PrimaryKeyConstraint, DateTime, func
-from sqlalchemy.ext.declarative import declarative_base, declared_attr
+from sqlalchemy import Column, Table, PrimaryKeyConstraint, DateTime, func, String, Integer, Sequence
 from sqlalchemy.ext.declarative import as_declarative
+from sqlalchemy.ext.declarative import declarative_base, declared_attr
 
 import log
 from app.utils import alchemy
@@ -12,6 +12,11 @@ LOG = log.get_logger()
 
 @as_declarative()
 class BaseModel(object):
+    __table_args__ = {'mysql_collate': 'utf8_general_ci'}
+
+    index = Column(Integer(),  primary_key=True, unique=True, autoincrement=True)
+    isUse = Column(String(1), default='Y', nullable=False)
+    isDelete = Column(String(1), default='N', nullable=False)
     created = Column(DateTime, default=func.now())
     modified = Column(DateTime, default=func.now(), onupdate=func.now())
 
@@ -23,7 +28,7 @@ class BaseModel(object):
     def __table_cls__(cls, *arg, **kw):
         for obj in arg[1:]:
             if (isinstance(obj, Column) and obj.primary_key) or isinstance(
-                obj, PrimaryKeyConstraint
+                    obj, PrimaryKeyConstraint
             ):
                 return Table(*arg, **kw)
 
@@ -37,8 +42,8 @@ class BaseModel(object):
     def find_update(cls, session, id, args):
         return (
             session.query(cls)
-            .filter(cls.get_id() == id)
-            .update(args, synchronize_session=False)
+                .filter(cls.get_id() == id)
+                .update(args, synchronize_session=False)
         )
 
     @classmethod
@@ -60,8 +65,11 @@ class BaseModel(object):
         )
 
     FIELDS = {
+        "isUse": str,
+        "isDelete": str,
         "created": alchemy.datetime_to_timestamp,
         "modified": alchemy.datetime_to_timestamp,
+
     }
 
 
