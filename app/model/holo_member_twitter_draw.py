@@ -9,7 +9,8 @@ from app.utils import alchemy
 
 
 class HoloMemberTwitterDraw(Base):
-    __name__ == 'holo_member_twitter_draw'
+    __tablename__ = 'holo_member_twitter_draw'
+
 
     index = Column(Integer, primary_key=True)
     member_name = Column(String(80), unique=True, nullable=False)  ## == holo_member.name

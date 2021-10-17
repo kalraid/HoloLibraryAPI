@@ -7,7 +7,8 @@ from app.model import Base
 
 
 class HoloMemberTwitterTag(Base):
-    __name__ == 'holo_member_twitter_tag'
+    __tablename__ = 'holo_member_twitter_tag'
+
 
     index = Column(Integer, primary_key=True)
     member_name = Column(String(80), unique=True, nullable=False)  ## == holo_member.name

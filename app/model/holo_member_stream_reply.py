@@ -9,7 +9,7 @@ from app.utils import alchemy
 
 
 class HoloMemberStreamReply(Base):
-    __name__ == 'holo_member_stream_reply'
+    __tablename__ = 'holo_member_stream_reply'
 
     index = Column(Integer, primary_key=True)
     stream_id = Column(Integer, nullable=False)

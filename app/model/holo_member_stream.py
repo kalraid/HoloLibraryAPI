@@ -7,7 +7,8 @@ from app.model import Base
 
 
 class HoloMemberStream(Base):
-    __name__ == 'holo_member_stream'
+    __tablename__ = 'holo_member_stream'
+
 
     id = Column(Integer, primary_key=True)
     name = Column(String(300), nullable=False)

@@ -7,7 +7,8 @@ from app.model import Base
 
 
 class UserStaticYoutube(Base):
-    __name__ == 'user_static_youtube'
+    __tablename__ = 'user_static_youtube'
+
 
     user_id = Column(String(60), primary_key=True)
     channel_id = Column(String(400), nullable=False, unique=True)

@@ -12,7 +12,7 @@ from app.model import Base
 ## https://blog.hongminhee.org/2013/10/30/65522658529/
 
 class HoloCompany(Base):
-    __name__ == 'holo_company'
+    __tablename__ = 'holo_company'
 
     name = Column(String(200), primary_key=True)
 
