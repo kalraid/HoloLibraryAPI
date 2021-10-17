@@ -60,7 +60,7 @@ class Auth(BaseResource):
             t1 = AnalysisSubscribeThread(user.access_token, session, user.user_id)
             t1.start()
 
-            self.on_success_thread(res, None)
+            self.on_success_thread(res, user)
         else:
             raise InvalidParameterError(req.context["data"])
 

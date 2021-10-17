@@ -59,7 +59,7 @@ class BaseResource(object):
 
         obj = OrderedDict()
         obj["meta"] = meta
-        obj["data"] = data
+        obj["data"] = data.to_dict()
         res.body = self.to_json(obj)
 
     def on_get(self, req, res):

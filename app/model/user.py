@@ -10,7 +10,7 @@ from app.model import Base
 
 class User(Base):
     __tablename__ = 'user'
-
+    __name__ = 'user'
 
     user_id = Column(String(60), primary_key=True)
     username = Column(String(20), nullable=False)
@@ -27,6 +27,14 @@ class User(Base):
     @classmethod
     def get_id(cls):
         return User.user_id
+
+    @classmethod
+    def find_by_id(cls, session, user_id):
+        return session.query(User).filter(User.user_id == user_id).one()
+
+    @classmethod
+    def find_one_by_id_and_email(cls, session, user_id, email):
+        return session.query(User).filter(User.user_id == user_id).filter(User.email == email).one()
 
     @classmethod
     def find_by_email(cls, session, email):

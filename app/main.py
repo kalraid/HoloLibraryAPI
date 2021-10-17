@@ -22,9 +22,9 @@ class App(falcon.App):
         self.add_route("/", base.BaseResource())
         self.add_route("/v1/login", login.Auth())
 
-        self.add_route("/v1/users", users.Collection())
+        # self.add_route("/v1/users", users.Collection())
         self.add_route("/v1/users/{user_id}", users.Item())
-        self.add_route("/v1/users/self/login", users.Self())
+        # self.add_route("/v1/users/self/login", users.Self())
 
         self.add_route("/v1/users/static/static/{user_id}", youtube.Item())
         self.add_route("/v1/users/static/static", youtube.Collection())
