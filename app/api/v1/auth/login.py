@@ -7,7 +7,7 @@ from app.api.common import BaseResource
 from app.errors import (
     InvalidParameterError,
 )
-from app.model import User
+from app.model import User, UserStaticYoutube
 from app.utils.auth import uuid
 
 try:
@@ -38,11 +38,12 @@ class Auth(BaseResource):
         if user_req:
             user = User()
             user.user_id = user_req["userId"]
-            user.username = user_req["userId"]
+            user.username = user_req["userName"]
             user.email = user_req["userEmail"]
             user.access_token = user_req["accessToken"]
 
             user_db = None
+            age = UserStaticYoutube()
             try:
                 user_db = session.query(User).filter(User.email == user.email).one()
             except:
@@ -50,7 +51,8 @@ class Auth(BaseResource):
 
             if not user_db:
                 session.add(user)
-
+                age = session.query(UserStaticYoutube).filter(UserStaticYoutube.user_id == user.user_id) \
+                    .order_by(UserStaticYoutube.sub_date.desc()).first()
             else:
                 user_db.access_token = user.access_token
 
@@ -60,10 +62,16 @@ class Auth(BaseResource):
             t1 = AnalysisSubscribeThread(user.access_token, session, user.user_id)
             t1.start()
 
-            self.on_success_thread(res, None)
+            user.user_id = user_req["userId"]
+            user.username = user_req["userName"]
+            user.email = user_req["userEmail"]
+            user.access_token = user_req["accessToken"]
+
+            response = {'user_id': user.user_id, 'username': user.username, 'email': user.email, 'access_token': user.access_token, 'age': age.sub_date}
+
+            self.on_success_thread(res, response)
         else:
             raise InvalidParameterError(req.context["data"])
-
 
     def on_get(self, req, res):
         res.status = falcon.HTTP_200

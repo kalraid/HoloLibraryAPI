@@ -53,7 +53,7 @@ class Item(BaseResource):
     Handle for endpoint: /v1/users/{user_id}
     """
 
-    @falcon.before(auth_required)
+    # @falcon.before(auth_required)
     def on_get(self, req, res, user_id):
         session = req.context["session"]
         try:

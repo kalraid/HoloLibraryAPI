@@ -8,13 +8,13 @@ from sqlalchemy.exc import SQLAlchemyError
 
 import log
 from app.errors import DatabaseError, ERR_DATABASE_ROLLBACK
-from app.model.holo_member_ch import HoloMemberCh
+from app.model.holo_member_twitter_info import HoloMemberTwitterInfo
 from app.model.user_static_youbute import UserStaticYoutube
 
 LOG = log.get_logger()
 
 
-class AnalysisSubscribeThread(threading.Thread):
+class TwitterListenerThread(threading.Thread):
     def __init__(self, access_token, session, user_id):
         super().__init__()
         self.access_token = access_token
@@ -34,9 +34,7 @@ class AnalysisSubscribeThread(threading.Thread):
 
         LOG.info(headers)
         # TODO select member ch name str list
-        channelList = self.session.query(HoloMemberCh.channel_id).all()
-
-        # https://developers.google.com/youtube/v3/docs/subscriptions/list?hl=ko&apix_params=%7B%22part%22%3A%5B%22id%2C%20snippet%22%5D%2C%22forChannelId%22%3A%22UC7fk0CB07ly8oSl0aqKkqFg%2CUCp6993wxpyDPHUpavwDFqgg%2CUCoSrY_IQQVpmIRZ9Xf-y93g%2CUCyl1z3jo3XHR1riLFKG5UAg%2CUCL_qhgtOy0dy1Agp8vkySQg%2CUCHsx4Hqa-1ORjQTh9TYDhww%2CUC8rcEBzJSleTkf_-agPM20g%2CUCsUj0dszADCGbF3gNrQEuSQ%2CUC3n5uGu18FoCy23ggWWp8tA%2CUCmbs8T6MWqUHP1tIQvSgKrg%2CUCO_aKKYxn4tvrqPjcTzZ6EQ%2CUCgmPnx-EEeOrZSg5Tiw7ZRQ%2CUCp6993wxpyDPHUpavwDFqgg%22%2C%22maxResults%22%3A100%2C%22mine%22%3Atrue%7D&apix=true#try-it
+        channelList = self.session.query(HoloMemberTwitterInfo.twitter_id).all()
 
         channelStr = ''
         if channelList:

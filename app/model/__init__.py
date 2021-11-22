@@ -9,5 +9,6 @@ from .holo_member_stream_reply import HoloMemberStreamReply
 from .holo_member_twitter import HoloMemberTwitter
 from .holo_member_twitter_draw import HoloMemberTwitterDraw
 from .holo_member_twitter_tag import HoloMemberTwitterTag
+from .holo_member_twitter_info import HoloMemberTwitterInfo
 from .user import User
 from .user_static_youbute import UserStaticYoutube
