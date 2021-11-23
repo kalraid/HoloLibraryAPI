@@ -33,12 +33,12 @@ engine = get_engine(config.DATABASE_URL)
 def init_session():
     db_session.configure(bind=engine)
 
-    # __init_table__()
+    #__init_table__()
     __init_data__()
 
 
 def __init_table__():
-    # Base.metadata.drop_all(engine)
+    #Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
 
 

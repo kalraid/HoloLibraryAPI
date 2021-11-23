@@ -1,7 +1,8 @@
-twitter_consumer_key = ""
-twitter_consumer_secret = ""
-twitter_access_token = ""
-twitter_access_secret = ""
+twitter_consumer_key = "LyJRYgDOXyXgkEwVfCzZdvYZx"
+twitter_consumer_secret = "GJqGw39xTKs63CQB84vvxuhAnLifVPIkeYHehNH7pypGwGqjoq"
+#twitter_access_token = "AAAAAAAAAAAAAAAAAAAAAHsjTgEAAAAAWiB8zHi6GLqE1aF%2F4yNtd8kMqnQ%3DXBQE9cq3pSVn0PrT9ln4vmLyqsGNeuTAuril09anUvI1qifuUg"
+twitter_access_token = "1433414457179312128-Rk4M7AhwcoOS5l4vGLHpGhZPU5RT6Y"
+twitter_access_secret = "MOsBpp5QYq8lhwZXGdXsDNTrSftcAod7kAoPSRVC5f5hh"
 import twitter
 twitter_api = twitter.Api(consumer_key=twitter_consumer_key,
                           consumer_secret=twitter_consumer_secret,
@@ -9,48 +10,12 @@ twitter_api = twitter.Api(consumer_key=twitter_consumer_key,
                           access_token_secret=twitter_access_secret)
 
 
-account = "@TheBlueHouseKR"
-statuses = twitter_api.GetUserTimeline(screen_name=account, count=200, include_rts=True, exclude_replies=False)
-print(statuses)
-
-for status in statuses:
-    print(status.text)
-#     print(status.text.encode('utf-8'))
-
-output_file_name = "twitter_get_timeline_result.txt"
-with open(output_file_name, "w", encoding="utf-8") as output_file:
-    for status in statuses:
-        print(status, file=output_file)
-
-query = "코로나"
-statuses = twitter_api.GetSearch(term=query, count=100)
-for status in statuses:
-    print(status.text)
-
-
-query = "#nthroom"
-statuses = twitter_api.GetSearch(term=query, count=100)
-for status in statuses:
-    for tag in status.hashtags:
-        print(tag.text)
-
-from collections import Counter
-
-query = "#nthroom"
-statuses = twitter_api.GetSearch(term=query, count=100)
-result = []
-for status in statuses:
-    for tag in status.hashtags:
-        result.append(tag.text)
-
-Counter(result).most_common(20)
-
-
 import json
-query = ["n번방"]
+
+account = ["880317891249188864","1433414457179312128"]
 output_file_name = "stream_result.txt"
 with open(output_file_name, "w", encoding="utf-8") as output_file:
-    stream = twitter_api.GetStreamFilter(track=query)
+    stream = twitter_api.GetStreamFilter(follow=account)   # GetStreamSample #GetUserStream
     while True:
         for tweets in stream:
             tweet = json.dumps(tweets, ensure_ascii=False)
