@@ -13,18 +13,17 @@ def get_twitter_data(db_session):
 
     for index, data_row in df.iterrows():
         holoMemberTwitterInfo = HoloMemberTwitterInfo()
-        holoMemberTwitterInfo.member = HoloMember().find_by_id(db_session, data_row[0])
 
         holoMemberTwitterInfo.twitter_url = data_row[1]
         holoMemberTwitterInfo.twitter_id = data_row[2]
         holoMemberTwitterInfo.twitter_username = data_row[3]
         holoMemberTwitterInfo.twitter_name = data_row[4]
 
-
-
         item = db_session.query(HoloMemberTwitterInfo).filter(
             holoMemberTwitterInfo.twitter_id == HoloMemberTwitterInfo.twitter_id).first()
+
         if item is None:
+            holoMemberTwitterInfo.member = HoloMember().find_by_id(db_session, data_row[0])
             db_session.add(holoMemberTwitterInfo)
 
     db_session.commit()
