@@ -16,7 +16,7 @@ class HoloMemberTwitterMedia(Base):
     holo_member_tweet = relationship("HoloMemberTweet", backref="holo_member_twitter_media")
 
     media_type = Column(String(10), nullable=True) # photo, youtube, retweet
-    media_link = Column(String(400), nullable=True)
+    media_link = Column(String(300), nullable=True)
 
     def __repr__(self):
         return "<HoloMemberTwitter(media_type='%s', media_link='%s')>" % (

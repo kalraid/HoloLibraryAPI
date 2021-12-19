@@ -15,8 +15,8 @@ class HoloMeme(Base):
     member_name = Column(ARRAY(String(80)), nullable=False)
     meme_name = Column(String(80), nullable=False)
     meme_describe = Column(String(500), nullable=False)
-    meme_img = relationship("HoloMemeImg", backref="holo_meme")
-    meme_stream = relationship("HoloMemeStream", backref="holo_meme")
+    meme_img = relationship("HoloMemeImg", backref="holo_neme_img")
+    meme_stream = relationship("HoloMemeStream", backref="holo_neme_origin_stream")
 
     def __repr__(self):
         return "<HoloMeme(member_name='%s', meme_name='%s', meme_describe='%s')>" % (
