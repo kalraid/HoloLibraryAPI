@@ -11,7 +11,7 @@ test_list = list
 
 LOG = log.get_logger()
 
-def tweet_parse(self, tweet):
+def tweet_parse(self, tweet, ban_tags):
     type = "BASE"
     holoMemberTweet = HoloMemberTweet()
 
@@ -61,7 +61,13 @@ def tweet_parse(self, tweet):
         for i in entities["hashtags"]:
             holoMemberTwitterHashtag = HoloMemberTwitterHashtag()
             holoMemberTwitterHashtag.holo_member_tweet_id = holoMemberTweet.tweet_id
-            holoMemberTwitterHashtag.hashtag = i["text"]
+            holoMemberTwitterHashtag.hashtag = "#"+i["text"]
+            holoMemberTwitterHashtag.datatype = "tweet"
+            holoMemberTwitterHashtag.type = "test2"
+
+            if i in ban_tags:
+                holoMemberTwitterHashtag.isUse="N"
+
             hashtags.append(holoMemberTwitterHashtag)
 
         holoMemberTweet.holo_member_twitter_hashtag = hashtags
@@ -105,4 +111,5 @@ def tweet_parse(self, tweet):
         type = "REPLY"
 
     holoMemberTweet.type = type
+    holoMemberTweet.holo_member_twitter_hashtag
     return holoMemberTweet

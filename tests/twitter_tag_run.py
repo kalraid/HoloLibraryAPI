@@ -1,8 +1,15 @@
+from requests.exceptions import ChunkedEncodingError
+
 import log
 
-import twitter_tag_parser
+import traceback
+
 from app.database import get_session
-from app.model import HoloMemberTwitterInfo
+from app.model import HoloMemberTwitterHashtag, HoloTwitterDraw, HoloMemberHashtag, HoloTwitterDrawHashtag
+import threading
+
+import time
+import sched
 
 twitter_consumer_key = "LyJRYgDOXyXgkEwVfCzZdvYZx"
 twitter_consumer_secret = "GJqGw39xTKs63CQB84vvxuhAnLifVPIkeYHehNH7pypGwGqjoq"
@@ -19,33 +26,77 @@ twitter_api = twitter.Api(consumer_key=twitter_consumer_key,
 import json
 
 account = ["8803178971249188864", "1433414457179312128"]
-output_file_name = "stream_result.txt"
+output_file_name = "stream_tag_result.txt"
 db_session = get_session()
 test_list = []
 LOG = log.get_logger()
 
+
 with open(output_file_name, "w", encoding="utf-8") as output_file:
-    repeat_cnt = 0
-    account = HoloMemberTwitterInfo().get_twitter_ids(db_session)
-    stream = twitter_api.GetStreamFilter(follow=account, filter_level="low")
-    twitter_api.GetUserStream()
-    while True:
-        try:
-            for tweets in stream:
-                if "user" in tweets and "id" in tweets["user"]:
-                    twitter_id = str(tweets["user"]["id"])
-                    if twitter_id in account:
-                        tweet = json.dumps(tweets, ensure_ascii=False)
-                        print(tweet, file=output_file, flush=True)
-                        tweet_parse_result = twitter_tag_parser.tweet_parse(twitter_tag_parser, tweets)
-                        # LOG.info("tweet_parse_result : {}".format(tweet_parse_result))
-                        if tweet_parse_result:
-                            db_session.add(tweet_parse_result)
-                            # test_list.append({tweet_parse_result})
-                            db_session.commit()
-                            repeat_cnt = 0
-        except Exception:
-            LOG.error(Exception)
-            LOG.error(stream)
-            stream = twitter_api.GetStreamFilter(follow=account, filter_level="low")  # if error restart stream
-            twitter_api.GetUserStream()
+    tags = []
+    #tags = HoloMemberTwitterHashtag().get_group_by_hashtag(db_session)
+    base_tags = HoloMemberHashtag().get_group_by_hashtag(db_session)
+
+    tags.extend(base_tags)
+
+    if tags:
+        ban_tags = HoloMemberTwitterHashtag().get_group_by_hashtag_not_use(db_session)
+        LOG.info(" tags len : {} ".format(len(tags)))
+        stream = twitter_api.GetStreamFilter(track=tags, filter_level="low")   # tags len max is 250
+        twitter_api.GetUserStream()
+
+        while True:
+            try:
+                for tweets in stream:
+                    if "text" in tweets and tweets["text"] and tweets["text"][0:2] != "RT":  # post tweet only parsing
+                        if "retweeted_status" not in tweets and "quoted_status" not in tweets:
+                            entities = tweets["entities"]
+
+                            if "extended_tweet" in tweets:
+                                extend = tweets["extended_tweet"]
+                                if "media" in extend:
+                                    entities["media"] = extend["media"]
+                                if "hashtags" in extend:
+                                    entities["hashtags"] = extend["hashtags"]
+
+                            hashtags = []
+                            if entities is not None and "hashtags" in entities and entities["hashtags"]:
+                                # holoMemberTweet.hashtags = list(set(map(lambda i: i["text"], entities["hashtags"])))
+                                for i in entities["hashtags"]:
+                                    holoTwitterDrawHashtag = HoloTwitterDrawHashtag()
+                                    holoTwitterDrawHashtag.hashtag = "#" + i["text"]
+                                    holoTwitterDrawHashtag.datatype = "image"
+                                    holoTwitterDrawHashtag.type = "image"
+
+                                    if i in ban_tags:
+                                        holoTwitterDrawHashtag.isUse = "N"
+
+                                    hashtags.append(holoTwitterDrawHashtag)
+
+                            if "media" in entities and entities["media"]:
+                                media = []
+                                for i in entities["media"]:
+                                    holo_twitter_draw = HoloTwitterDraw()
+                                    holo_twitter_draw.twitter_id = tweets["id"]
+                                    holo_twitter_draw.url = i["media_url"]
+                                    holo_twitter_draw.hashtag = hashtags
+
+                                    holo_twitter_draw.twitter_user_nm = tweets['user']['screen_name']
+                                    holo_twitter_draw.twitter_user_id = tweets['user']['id']
+                                    media.append(holo_twitter_draw)
+
+                                for i in media:
+                                    db_session.add(i)
+                                    for draw_tags in hashtags:
+                                        draw_tags.holo_twitter_draw = i
+                                        db_session.add(draw_tags)
+                                db_session.commit()
+            except ChunkedEncodingError as ex:  # Connection broken -> restart
+                LOG.error(traceback.format_exc())
+                LOG.error(stream)
+                ban_tags = HoloMemberTwitterHashtag().get_group_by_hashtag_not_use(db_session)
+                LOG.info(" tags len : {} ".format(len(tags)))
+                stream = twitter_api.GetStreamFilter(track=tags, filter_level="low")   # tags len max is 250
+                twitter_api.GetUserStream()
+    else:
+        LOG.info("tags is empty")

@@ -12,19 +12,19 @@ import log
 
 LOG = log.get_logger()
 
-# a member tweet's hashtag
-class HoloMemberTwitterHashtag(Base):
-    __tablename__ = 'holo_member_twitter_hashtag'
+# main tag list
+class HoloMemberHashtag(Base):
+    __tablename__ = 'holo_member_hashtag'
 
     hashtag = Column(String(500), nullable=False)
     datatype = Column(String(30), nullable=False) # init, tweet, img
     type = Column(String(30), nullable=False) # base, fanart, stream
 
-    holo_member_tweet_id = Column(String(50), ForeignKey('holo_member_tweet.tweet_id'), nullable=False)
-    holo_member_tweet = relationship("HoloMemberTweet", backref="holo_member_twitter_hashtag")
+    member_id = Column(Integer, ForeignKey('holo_member.index'), nullable=True)
+    member = relationship("HoloMember", backref="holo_member_hashtag")
 
     def __repr__(self):
-        return "<HoloMemberTwitterHashtag(hashtag='%s',datatype='%s',type='%s')>" % (
+        return "<holo_member_hashtag(hashtag='%s',datatype='%s',type='%s')>" % (
             self.hashtag,
             self.datatype,
             self.type
@@ -32,17 +32,17 @@ class HoloMemberTwitterHashtag(Base):
 
     @classmethod
     def get_id(cls):
-        return HoloMemberTwitterHashtag.index
+        return HoloMemberHashtag.index
 
     @classmethod
     def get_group_by_hashtag(cls, session):
-        hashtags =  session.query(HoloMemberTwitterHashtag.hashtag).filter(HoloMemberTwitterHashtag.isUse == "Y").group_by(HoloMemberTwitterHashtag.hashtag).all()
+        hashtags =  session.query(HoloMemberHashtag.hashtag).filter(HoloMemberHashtag.isUse == "Y").group_by(HoloMemberHashtag.hashtag).all()
         LOG.info("len list : {}".format(len(hashtags)))
         return list(map(lambda i: i[0].strip(), hashtags))
 
     @classmethod
     def get_group_by_hashtag_not_use(cls, session):
-        hashtags =  session.query(HoloMemberTwitterHashtag.hashtag).filter(HoloMemberTwitterHashtag.isUse == "N").group_by(HoloMemberTwitterHashtag.hashtag).all()
+        hashtags =  session.query(HoloMemberHashtag.hashtag).filter(HoloMemberHashtag.isUse == "N").group_by(HoloMemberHashtag.hashtag).all()
         LOG.info("len list : {}".format(len(hashtags)))
         return list(map(lambda i: i[0].strip(), hashtags))
 

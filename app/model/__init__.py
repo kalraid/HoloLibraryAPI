@@ -7,12 +7,13 @@ from .holo_member_ch import HoloMemberCh
 from .holo_member_stream import HoloMemberStream
 from .holo_member_stream_reply import HoloMemberStreamReply
 from .holo_member_tweet import HoloMemberTweet
+from .holo_member_hashtag import HoloMemberHashtag
 from .holo_member_twitter_hashtag import HoloMemberTwitterHashtag
 from .holo_member_twitter_mention import HoloMemberTwitterMention
 from .holo_member_twitter_url import HoloMemberTwitterUrl
 from .holo_member_twitter_media import HoloMemberTwitterMedia
 from .holo_twitter_draw import HoloTwitterDraw
-from .holo_twitter_tag import HoloTwitterTag
+from .holo_twitter_draw_hashtag import HoloTwitterDrawHashtag
 from .holo_member_twitter_info import HoloMemberTwitterInfo
 from .user import User
 from .user_static_youbute import UserStaticYoutube

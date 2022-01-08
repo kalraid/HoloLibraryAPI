@@ -3,7 +3,7 @@ import traceback
 import log
 import twitter_parser
 from app.database import get_session
-from app.model import HoloMemberTwitterInfo
+from app.model import HoloMemberTwitterInfo, HoloMemberTwitterHashtag
 
 twitter_consumer_key = "LyJRYgDOXyXgkEwVfCzZdvYZx"
 twitter_consumer_secret = "GJqGw39xTKs63CQB84vvxuhAnLifVPIkeYHehNH7pypGwGqjoq"
@@ -28,6 +28,7 @@ LOG = log.get_logger()
 with open(output_file_name, "w", encoding="utf-8") as output_file:
     repeat_cnt = 0
     account = HoloMemberTwitterInfo().get_twitter_ids(db_session)
+    ban_tags = HoloMemberTwitterHashtag().get_group_by_hashtag_not_use(db_session)
     stream = twitter_api.GetStreamFilter(follow=account, filter_level="low")  # GetStreamSample #GetUserStream
     twitter_api.GetUserStream()
     while True:
@@ -39,7 +40,7 @@ with open(output_file_name, "w", encoding="utf-8") as output_file:
                         index = account.index(twitter_id)
                         tweet = json.dumps(tweets, ensure_ascii=False)
                         print(tweet, file=output_file, flush=True)
-                        tweet_parse_result = twitter_parser.tweet_parse(twitter_parser, tweets)
+                        tweet_parse_result = twitter_parser.tweet_parse(twitter_parser, tweets, ban_tags)
                         # LOG.info("tweet_parse_result : {}".format(tweet_parse_result))
                         if tweet_parse_result:
                             db_session.add(tweet_parse_result)
@@ -51,3 +52,4 @@ with open(output_file_name, "w", encoding="utf-8") as output_file:
             LOG.error(stream)
             stream = twitter_api.GetStreamFilter(follow=account, filter_level="low")  # GetStreamSample #GetUserStream
             twitter_api.GetUserStream()
+

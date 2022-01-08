@@ -12,25 +12,23 @@ from app.utils import alchemy
 class HoloTwitterDraw(Base):
     __tablename__ = 'holo_twitter_draw'
 
-    twitter_id = Column(String(200), nullable=True)
-    url = Column(JSON, nullable=True)
-    date = Column(DATE, nullable=True)
-
-    holo_twitter_tag_id = Column(Integer, ForeignKey('holo_twitter_tag.index'))
-    holo_twitter_tag = relationship("HoloTwitterTag", backref="holo_twitter_draw")
+    twitter_id = Column(String(50), nullable=False)
+    url = Column(String(100), nullable=False)
+    twitter_user_nm = Column(String(100), nullable=False)
+    twitter_user_id = Column(String(50), nullable=False)
 
     def __repr__(self):
-        return "<HoloTwitterDraw(twitter_id='%s', url='%s',date='%s')>" % (
+        return "<HoloTwitterDraw(twitter_id='%s', url='%s',twitter_user_nm='%s',twitter_user_id='%s')>" % (
             self.twitter_id,
             self.url,
-            self.date,
+            self.twitter_user_nm,
+            self.twitter_user_id,
         )
 
     @classmethod
     def get_id(cls):
         return HoloTwitterDraw.index
 
-
-    FIELDS = {"content": alchemy.passby, "date": DATE}
+    FIELDS = {"twitter_id": str, "url": str, "twitter_user_nm": str, "twitter_user_id": str}
 
     FIELDS.update(Base.FIELDS)

@@ -10,6 +10,7 @@ from app.model import Base
 from .init_holo_member import get_member_data
 from .init_holo_member_ch import get_channel_data
 from .init_holo_member_twitter import get_twitter_data
+from .init_holo_member_twitter_tags import get_twitter_tags_data
 
 LOG = log.get_logger()
 
@@ -39,8 +40,8 @@ def get_session():
 def init_session():
     db_session.configure(bind=engine)
 
-    __init_table__()
-    __init_data__()
+    #__init_table__()
+    #__init_data__()
 
 
 def __init_table__():
@@ -53,10 +54,11 @@ def __init_data__():
     get_member_data(db_session)
     get_channel_data(db_session)
     get_twitter_data(db_session)
+    get_twitter_tags_data(db_session)
 
 
 def drop_all(engine):
-    metadata = Base.metadata # 여러분의 Base를 가져오세요!
+    metadata = Base.metadata
     engine_name = engine.name
     foreign_key_turn_off = {
         'mysql': 'SET FOREIGN_KEY_CHECKS=0;',
