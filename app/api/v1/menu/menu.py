@@ -21,6 +21,7 @@ class Menu(BaseResource):
     """
     Handle for endpoint: /v1/menu
     """
+
     ## this list is menu name list
     def on_get(self, req, res):
         data = [
@@ -124,6 +125,36 @@ class Menu(BaseResource):
                 'menu_id': 'M20204',
                 'role': 'user'
             },
+            {
+                'menu_name': '트윗 이미지 모음',
+                'menu_id': 'M20300',
+                'role': 'user'
+            },
+            {
+                'menu_name': '팬 아트', # fanart
+                'menu_id': 'M20301',
+                'role': 'user'
+            },
+            {
+                'menu_name': '밈 아트', # meme
+                'menu_id': 'M20302',
+                'role': 'user'
+            },
+            {
+                'menu_name': '방송 관련', # kirinuki, stream
+                'menu_id': 'M20303',
+                'role': 'user'
+            },
+            {
+                'menu_name': '이벤트', #  custom live tags
+                'menu_id': 'M20304',
+                'role': 'user'
+            },
+            {
+                'menu_name': '전체', # base + custom live tags all
+                'menu_id': 'M20305',
+                'role': 'user'
+            }
 
         ]
 

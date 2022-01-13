@@ -4,6 +4,7 @@ import falcon
 
 import log
 from app.api.common import base
+from app.api.v1.twitter import tweet
 from app.api.v1.auth import login
 from app.api.v1.menu import menu
 from app.api.v1.static import youtube
@@ -25,11 +26,24 @@ class App(falcon.App):
         self.add_route("/v1/login", login.Auth())
 
         self.add_route("/v1/menu/list", menu.Menu())
-        self.add_route("/v1/member/youtube/collection", member.Collection())
+
 
         self.add_route("/v1/users", users.Collection())
         self.add_route("/v1/users/{user_id}", users.Item())
         self.add_route("/v1/users/self/login", users.Self())
+
+        self.add_route("/v1/member/list", member.List())
+        self.add_route("/v1/member/tags", member.Tags())
+        self.add_route("/v1/member/tweets", member.Tweets())
+        self.add_route("/v1/member/tweet/live", member.TweetLive())
+        self.add_route("/v1/member/youtube/channel/list", member.Collection())
+
+        self.add_route("/v1/tweet/draws", tweet.Draws())
+        self.add_route("/v1/tweet/draws/live", tweet.DrawsLive())
+
+
+
+        self.add_route("/v1/tweet/member/{memeber_id}", users.Self())
 
         self.add_error_handler(AppError, AppError.handle)
 

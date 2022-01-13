@@ -12,8 +12,7 @@ def get_twitter_tags_data(db_session):
     LOG.debug(' init data - get_twitter_tags_data datashhet ok ')
 
     names =  df[:0].columns # tag type array
-
-    for _, data_row in df[1:].iterrows():
+    for _, data_row in df[0:].iterrows():
         holo_member_name_kor = data_row[0]
         member = db_session.query(HoloMember).filter(HoloMember.member_name_kor == holo_member_name_kor).first()
         for index, value in enumerate(data_row[1:]):

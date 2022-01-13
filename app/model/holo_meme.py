@@ -29,6 +29,6 @@ class HoloMeme(Base):
     def get_id(cls):
         return HoloMeme.meme_name
 
-    FIELDS = {"meme_name": str, "meme_name": str, "meme_describe": str}
+    FIELDS = {"meme_name": str, "member_name": str, "meme_describe": str}
 
     FIELDS.update(Base.FIELDS)

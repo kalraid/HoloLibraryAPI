@@ -43,6 +43,6 @@ class HoloMemberTweet(Base):
     def find_by_twitter_id(cls, session, tweet_id):
         return session.query(HoloMemberTweet).filter(HoloMemberTweet.tweet_id == tweet_id).one()
 
-    FIELDS = {"content": alchemy.passby, "tweet_id": str, "date": DATETIME, "rt_tweet_id": str, "qt_tweet_id": str, "type": str}
+    FIELDS = {"index": int, "tweet_id": str, "content": str, "date": str, "rt_tweet_id": str, "qt_tweet_id": str, "type": str}
 
     FIELDS.update(Base.FIELDS)

@@ -24,10 +24,11 @@ class HoloMemberHashtag(Base):
     member = relationship("HoloMember", backref="holo_member_hashtag")
 
     def __repr__(self):
-        return "<holo_member_hashtag(hashtag='%s',datatype='%s',type='%s')>" % (
+        return "<holo_member_hashtag(hashtag='%s',datatype='%s',type='%s', member_id='%s')>" % (
             self.hashtag,
             self.datatype,
-            self.type
+            self.type,
+            self.member_id
         )
 
     @classmethod
@@ -49,6 +50,6 @@ class HoloMemberHashtag(Base):
 
 
 
-    FIELDS = {"hashtag": String, "datatype": String, "type": String}
+    FIELDS = {"hashtag": str, "datatype": str, "type": str , 'member_id' : str}
 
     FIELDS.update(Base.FIELDS)
