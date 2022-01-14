@@ -17,7 +17,7 @@ class HoloMemberTweet(Base):
     rt_tweet_id = Column(String(50), nullable=True) # RT id
     qt_tweet_id = Column(String(50), nullable=True) # QT id
     reply_tweet_id = Column(String(50), nullable=True) # REPLY id
-    type = Column(String(20), nullable=False, default=None)
+    tweet_type = Column(String(20), nullable=False, default=None)
     is_holo_tweet = Column(Boolean, nullable=False, default=True)
 
     holo_member_twitter_info_id = Column(String(50), ForeignKey('holo_member_twitter_info.twitter_id'), nullable=True)

@@ -5,7 +5,8 @@ import log
 import traceback
 
 from app.database import get_session
-from app.model import HoloMemberTwitterHashtag, HoloTwitterDraw, HoloMemberHashtag, HoloTwitterDrawHashtag
+from app.model import HoloMemberTwitterHashtag, HoloTwitterDraw, HoloMemberHashtag, HoloTwitterDrawHashtag, \
+    HoloTwitterCustomDraw, HoloTwitterCustomDrawHashtag
 import threading
 
 import time
@@ -32,17 +33,29 @@ test_list = []
 LOG = log.get_logger()
 
 
-with open(output_file_name, "w", encoding="utf-8") as output_file:
+def getHashTags():
     tags = []
-    #tags = HoloMemberTwitterHashtag().get_group_by_hashtag(db_session)
-    base_tags = HoloMemberHashtag().get_group_by_hashtag(db_session)
+    try:
+        hashTags = HoloMemberTwitterHashtag().get_group_by_hashtag_two_month(db_session)
+        base_tags = HoloMemberHashtag().get_group_by_hashtag(db_session)
+        for i in hashTags:
+            if i not in base_tags:
+                tags.append(i)
+    except Exception:
+        LOG.error(traceback.format_exc())
+        LOG.error(stream)
 
-    tags.extend(base_tags)
+    return tags
+
+
+with open(output_file_name, "w", encoding="utf-8") as output_file:
+    tags = getHashTags()
 
     if tags:
         ban_tags = HoloMemberTwitterHashtag().get_group_by_hashtag_not_use(db_session)
+
         LOG.info(" tags len : {} ".format(len(tags)))
-        stream = twitter_api.GetStreamFilter(track=tags, filter_level="low")   # tags len max is 250
+        stream = twitter_api.GetStreamFilter(track=tags, filter_level="low")  # tags len max is 250
         twitter_api.GetUserStream()
 
         while True:
@@ -63,7 +76,7 @@ with open(output_file_name, "w", encoding="utf-8") as output_file:
                             if entities is not None and "hashtags" in entities and entities["hashtags"]:
                                 # holoMemberTweet.hashtags = list(set(map(lambda i: i["text"], entities["hashtags"])))
                                 for i in entities["hashtags"]:
-                                    holoTwitterDrawHashtag = HoloTwitterDrawHashtag()
+                                    holoTwitterDrawHashtag = HoloTwitterCustomDrawHashtag()
                                     holoTwitterDrawHashtag.hashtag = "#" + i["text"]
                                     holoTwitterDrawHashtag.datatype = "image"
                                     holoTwitterDrawHashtag.tagtype = "image"
@@ -76,7 +89,7 @@ with open(output_file_name, "w", encoding="utf-8") as output_file:
                             if "media" in entities and entities["media"]:
                                 media = []
                                 for i in entities["media"]:
-                                    holo_twitter_draw = HoloTwitterDraw()
+                                    holo_twitter_draw = HoloTwitterCustomDraw()
                                     holo_twitter_draw.twitter_id = tweets["id"]
                                     holo_twitter_draw.url = i["media_url"]
                                     holo_twitter_draw.hashtag = hashtags
@@ -88,15 +101,17 @@ with open(output_file_name, "w", encoding="utf-8") as output_file:
                                 for i in media:
                                     db_session.add(i)
                                     for draw_tags in hashtags:
-                                        draw_tags.holo_twitter_draw = i
+                                        draw_tags.holo_twitter_custom_draw = i
                                         db_session.add(draw_tags)
                                 db_session.commit()
+
             except ChunkedEncodingError as ex:  # Connection broken -> restart
                 LOG.error(traceback.format_exc())
                 LOG.error(stream)
+                tags = getHashTags()
                 ban_tags = HoloMemberTwitterHashtag().get_group_by_hashtag_not_use(db_session)
                 LOG.info(" tags len : {} ".format(len(tags)))
-                stream = twitter_api.GetStreamFilter(track=tags, filter_level="low")   # tags len max is 250
+                stream = twitter_api.GetStreamFilter(track=tags, filter_level="low")  # tags len max is 250
                 twitter_api.GetUserStream()
     else:
         LOG.info("tags is empty")

@@ -12,7 +12,7 @@ test_list = list
 LOG = log.get_logger()
 
 def tweet_parse(self, tweet, ban_tags):
-    type = "BASE"
+    tweet_type = "BASE"
     holoMemberTweet = HoloMemberTweet()
 
     user = tweet["user"]
@@ -63,7 +63,7 @@ def tweet_parse(self, tweet, ban_tags):
             holoMemberTwitterHashtag.holo_member_tweet_id = holoMemberTweet.tweet_id
             holoMemberTwitterHashtag.hashtag = "#"+i["text"]
             holoMemberTwitterHashtag.datatype = "tweet"
-            holoMemberTwitterHashtag.type = "test2"
+            holoMemberTwitterHashtag.tweet_type = "test2"
 
             if i in ban_tags:
                 holoMemberTwitterHashtag.isUse="N"
@@ -98,18 +98,18 @@ def tweet_parse(self, tweet, ban_tags):
 
     if "retweeted_status" in tweet and "id" in tweet["retweeted_status"]:
         holoMemberTweet.rt_tweet_id = tweet["retweeted_status"]["id"]
-        type = "RT"
+        tweet_type = "RT"
     if "quoted_status" in tweet and "id" in tweet["quoted_status"]:
         holoMemberTweet.qt_tweet_id = tweet["quoted_status"]["id"]
-        if type == "RT":
-            type += "QT"
+        if tweet_type == "RT":
+            tweet_type += "QT"
         else:
-            type = "QT"
+            tweet_type = "QT"
 
-    if "BASE" == type and text[0] == "@" and "in_reply_to_status_id" in tweet:
+    if "BASE" == tweet_type and text[0] == "@" and "in_reply_to_status_id" in tweet:
         holoMemberTweet.reply_tweet_id = tweet["in_reply_to_status_id"]
-        type = "REPLY"
+        tweet_type = "REPLY"
 
-    holoMemberTweet.type = type
+    holoMemberTweet.tweet_type = tweet_type
     holoMemberTweet.holo_member_twitter_hashtag
     return holoMemberTweet

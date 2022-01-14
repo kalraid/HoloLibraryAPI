@@ -18,7 +18,7 @@ class HoloMemberHashtag(Base):
 
     hashtag = Column(String(500), nullable=False)
     datatype = Column(String(30), nullable=False) # init, tweet, img
-    type = Column(String(30), nullable=False) # base, fanart, stream
+    tagtype = Column(String(30), nullable=False) # base, fanart, stream
 
     member_id = Column(Integer, ForeignKey('holo_member.index'), nullable=True)
     member = relationship("HoloMember", backref="holo_member_hashtag")

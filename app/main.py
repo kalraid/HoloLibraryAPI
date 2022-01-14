@@ -41,6 +41,8 @@ class App(falcon.App):
         self.add_route("/v1/tweet/draws", tweet.Draws())
         self.add_route("/v1/tweet/draws/live", tweet.DrawsLive())
 
+        self.add_route("/v1/tweet/custom/draws", tweet.CustomDraws())
+        self.add_route("/v1/tweet/custom/tags", tweet.CustomTags())
 
 
         self.add_route("/v1/tweet/member/{memeber_id}", users.Self())

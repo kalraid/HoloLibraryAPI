@@ -46,7 +46,7 @@ def init_session():
 
 def __init_table__():
 
-    drop_all(engine)
+    #drop_all(engine)
     create_all(engine)
 
 
