@@ -21,16 +21,16 @@ class HoloTwitterDrawHashtag(Base):
     holo_twitter_draw = relationship("HoloTwitterDraw", backref="holo_twitter_draw_hashtag")
 
     def __repr__(self):
-        return "<HoloTwitterDrawHashtag(hashtag='%s', datatype='%s',type='%s')>" % (
+        return "<HoloTwitterDrawHashtag(hashtag='%s', datatype='%s',tagtype='%s')>" % (
             self.hashtag,
             self.datatype,
-            self.type,
+            self.tagtype,
         )
 
     @classmethod
     def get_id(cls):
         return HoloTwitterDrawHashtag.index
 
-    FIELDS = {"hashtag": str, "datatype": str, "type": str}
+    FIELDS = {"hashtag": str, "datatype": str, "tagtype": str}
 
     FIELDS.update(Base.FIELDS)

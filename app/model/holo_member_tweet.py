@@ -24,14 +24,14 @@ class HoloMemberTweet(Base):
     holo_member_twitter_info = relationship("HoloMemberTwitterInfo", backref="holo_member_tweet")
 
     def __repr__(self):
-        return "<HoloMemberTweet(index='%s', tweet_id='%s', content='%s', date='%s', rt_tweet_id='%s', qt_tweet_id='%s', type='%s')>" % (
+        return "<HoloMemberTweet(index='%s', tweet_id='%s', content='%s', date='%s', rt_tweet_id='%s', qt_tweet_id='%s', tweet_type='%s')>" % (
             self.index,
             self.tweet_id,
             self.content,
             self.date,
             self.rt_tweet_id,
             self.qt_tweet_id,
-            self.type
+            self.tweet_type
         )
 
 
@@ -43,6 +43,6 @@ class HoloMemberTweet(Base):
     def find_by_twitter_id(cls, session, tweet_id):
         return session.query(HoloMemberTweet).filter(HoloMemberTweet.tweet_id == tweet_id).one()
 
-    FIELDS = {"index": int, "tweet_id": str, "content": str, "date": str, "rt_tweet_id": str, "qt_tweet_id": str, "type": str}
+    FIELDS = {"index": int, "tweet_id": str, "content": str, "date": str, "rt_tweet_id": str, "qt_tweet_id": str, "tweet_type": str}
 
     FIELDS.update(Base.FIELDS)

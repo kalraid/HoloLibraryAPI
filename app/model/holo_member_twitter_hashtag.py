@@ -26,10 +26,10 @@ class HoloMemberTwitterHashtag(Base):
     holo_member_tweet = relationship("HoloMemberTweet", backref="holo_member_twitter_hashtag")
 
     def __repr__(self):
-        return "<HoloMemberTwitterHashtag(hashtag='%s',datatype='%s',type='%s')>" % (
+        return "<HoloMemberTwitterHashtag(hashtag='%s',datatype='%s',tagtype='%s')>" % (
             self.hashtag,
             self.datatype,
-            self.type
+            self.tagtype
         )
 
     @classmethod
@@ -60,6 +60,6 @@ class HoloMemberTwitterHashtag(Base):
         LOG.info("len list : {}".format(len(hashtags)))
         return list(map(lambda i: i[0].strip(), hashtags))
 
-    FIELDS = {"hashtag": String, "datatype": String, "type": String}
+    FIELDS = {"hashtag": String, "datatype": String, "tagtype": String}
 
     FIELDS.update(Base.FIELDS)

@@ -63,7 +63,7 @@ def tweet_parse(self, tweet, ban_tags):
             holoMemberTwitterHashtag.holo_member_tweet_id = holoMemberTweet.tweet_id
             holoMemberTwitterHashtag.hashtag = "#"+i["text"]
             holoMemberTwitterHashtag.datatype = "tweet"
-            holoMemberTwitterHashtag.tweet_type = "test2"
+            holoMemberTwitterHashtag.tagtype = "test2"
 
             if i in ban_tags:
                 holoMemberTwitterHashtag.isUse="N"

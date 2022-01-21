@@ -143,9 +143,10 @@ class Tags(BaseResource):
         filters = {}
         if 'member_id' in params and params['member_id']:
             member_id = params['member_id']
+            LOG.info(f'-------------------  member_id : {member_id}')
             tag_dbs = session.query(HoloMemberHashtag).filter(HoloMemberHashtag.member_id == member_id).all()
             filters['member_id'] = member_id
-        if 'index' in params and params['index']:
+        elif 'index' in params and params['index']:
             index = params['index']
             tag_dbs = session.query(HoloMemberHashtag).filter(HoloMemberHashtag.member_id == index).all()
             filters['member_id'] = index

@@ -40,8 +40,10 @@ class Draws(BaseResource):
             if 'hashtags' in params and params['hashtags']:
                 hashtags = params['hashtags']
 
-                draw_dbs = session.query(HoloTwitterDraw, HoloTwitterDrawHashtag.type, HoloTwitterDrawHashtag.datatype,
-                                         HoloMemberHashtag.hashtag, HoloMemberHashtag.member_id, HoloMemberHashtag.type,
+                draw_dbs = session.query(HoloTwitterDraw, HoloTwitterDrawHashtag.tagtype,
+                                         HoloTwitterDrawHashtag.datatype,
+                                         HoloMemberHashtag.hashtag, HoloMemberHashtag.member_id,
+                                         HoloMemberHashtag.tagtype,
                                          HoloMemberHashtag.datatype) \
                     .join(HoloTwitterDrawHashtag, HoloTwitterDrawHashtag.holo_twitter_draw_id == HoloTwitterDraw.index) \
                     .join(HoloMemberHashtag, HoloMemberHashtag.hashtag == HoloTwitterDrawHashtag.hashtag) \
@@ -57,20 +59,24 @@ class Draws(BaseResource):
                 for type_str in type_param.split(','):
                     type_list.append(type_str.strip())
 
-                draw_dbs = session.query(HoloTwitterDraw, HoloTwitterDrawHashtag.type, HoloTwitterDrawHashtag.datatype,
-                                         HoloMemberHashtag.hashtag, HoloMemberHashtag.member_id, HoloMemberHashtag.type,
+                draw_dbs = session.query(HoloTwitterDraw, HoloTwitterDrawHashtag.tagtype,
+                                         HoloTwitterDrawHashtag.datatype,
+                                         HoloMemberHashtag.hashtag, HoloMemberHashtag.member_id,
+                                         HoloMemberHashtag.tagtype,
                                          HoloMemberHashtag.datatype) \
                     .join(HoloTwitterDrawHashtag, HoloTwitterDrawHashtag.holo_twitter_draw_id == HoloTwitterDraw.index) \
                     .join(HoloMemberHashtag, HoloMemberHashtag.hashtag == HoloTwitterDrawHashtag.hashtag) \
                     .filter(HoloMemberHashtag.member_id == member_id) \
-                    .filter(HoloMemberHashtag.type.in_(type_list)) \
+                    .filter(HoloMemberHashtag.tagtype.in_(type_list)) \
                     .order_by(HoloTwitterDraw.created.desc()).limit(100) \
                     .all()
                 filters['type'] = type_param
 
             else:
-                draw_dbs = session.query(HoloTwitterDraw, HoloTwitterDrawHashtag.type, HoloTwitterDrawHashtag.datatype,
-                                         HoloMemberHashtag.hashtag, HoloMemberHashtag.member_id, HoloMemberHashtag.type,
+                draw_dbs = session.query(HoloTwitterDraw, HoloTwitterDrawHashtag.tagtype,
+                                         HoloTwitterDrawHashtag.datatype,
+                                         HoloMemberHashtag.hashtag, HoloMemberHashtag.member_id,
+                                         HoloMemberHashtag.tagtype,
                                          HoloMemberHashtag.datatype) \
                     .join(HoloTwitterDrawHashtag, HoloTwitterDrawHashtag.holo_twitter_draw_id == HoloTwitterDraw.index) \
                     .join(HoloMemberHashtag, HoloMemberHashtag.hashtag == HoloTwitterDrawHashtag.hashtag) \
@@ -81,8 +87,8 @@ class Draws(BaseResource):
             filters['member_id'] = member_id
         elif 'draw_index' in params and params['draw_index']:
             draw_index = params['draw_index']
-            draw_dbs = session.query(HoloTwitterDraw, HoloTwitterDrawHashtag.type, HoloTwitterDrawHashtag.datatype,
-                                     HoloMemberHashtag.hashtag, HoloMemberHashtag.member_id, HoloMemberHashtag.type,
+            draw_dbs = session.query(HoloTwitterDraw, HoloTwitterDrawHashtag.tagtype, HoloTwitterDrawHashtag.datatype,
+                                     HoloMemberHashtag.hashtag, HoloMemberHashtag.member_id, HoloMemberHashtag.tagtype,
                                      HoloMemberHashtag.datatype) \
                 .join(HoloTwitterDrawHashtag, HoloTwitterDrawHashtag.holo_twitter_draw_id == HoloTwitterDraw.index) \
                 .join(HoloMemberHashtag, HoloMemberHashtag.hashtag == HoloTwitterDrawHashtag.hashtag) \
@@ -171,7 +177,7 @@ class CustomDraws(BaseResource):
                 .order_by(HoloTwitterCustomDraw.created.desc()).limit(500) \
                 .all()
 
-        #data = alchemy.db_result_to_dict_list(draw_dbs)
+        # data = alchemy.db_result_to_dict_list(draw_dbs)
         list = []
         if type(list) == type(draw_dbs):
             for i in draw_dbs:
@@ -189,6 +195,88 @@ class CustomDraws(BaseResource):
         self.on_success(res, obj)
 
 
+class TweetInfo(BaseResource):
+    """
+    Handle for endpoint: /v1/tweet/detail
+    """
+
+    def on_get(self, req, res):
+        session = req.context["session"]
+        params = req.params
+        filters = {}
+
+        if 'member_id' in params and params['member_id']:
+            member_id = params['member_id']
+
+            member_list = []
+            for member_str in member_id.split(','):
+                member_list.append(member_str.strip())
+
+            draw_dbs = session.query(HoloMemberTwitterInfo) \
+                .filter(HoloMemberTwitterInfo.member_id.in_(member_list)) \
+                .all()
+
+            filters['member_id'] = member_id
+
+        else:
+            draw_dbs = session.query(HoloMemberTwitterInfo) \
+                .all()
+
+        list = alchemy.db_result_to_dict_list(draw_dbs)
+
+        obj = {'len': len(list), 'filters': filters, 'twitter_list': list}
+        self.on_success(res, obj)
+
+
+class TweetIds(BaseResource):
+    """
+    Handle for endpoint: /v1/tweet/ids
+    """
+
+    def on_get(self, req, res):
+        session = req.context["session"]
+        params = req.params
+        filters = {}
+
+        if 'hashtag' in params and params['hashtag']:
+            hashtag = params['hashtag']
+            hashtag_list = []
+            filters['hashtag'] = hashtag
+
+            for hashtag_str in hashtag.split(','):
+                hashtag = hashtag_str.strip()
+                if hashtag[0] != '#':
+                    hashtag = '#' + hashtag
+                hashtag_list.append(hashtag)
+
+            if 'tagtype' in params and params['tagtype']:
+                tagtype = params['tagtype']
+
+                if 'custom' == tagtype:
+                    dbs = session.query(HoloTwitterCustomDraw) \
+                        .join(HoloTwitterCustomDrawHashtag) \
+                        .where(HoloTwitterCustomDrawHashtag.hashtag.in_(hashtag_list)) \
+                        .group_by(HoloTwitterCustomDraw.twitter_id).limit(5).all()
+
+                else:
+                    dbs = session.query(HoloTwitterDraw) \
+                        .join(HoloTwitterDrawHashtag) \
+                        .where(HoloTwitterDrawHashtag.hashtag.in_(hashtag_list)) \
+                        .group_by(HoloTwitterDraw.twitter_id).limit(5).all()
+
+                filters['tagtype'] = tagtype
+            else:
+                dbs = session.query(HoloTwitterDraw) \
+                    .join(HoloTwitterDrawHashtag) \
+                    .where(HoloTwitterDrawHashtag.hashtag.in_(hashtag_list)) \
+                    .group_by(HoloTwitterDraw.twitter_id).limit(5).all()
+
+        list = alchemy.db_result_to_dict_list(dbs)
+
+        obj = {'len': len(list), 'filters': filters, 'tweet_list': list}
+        self.on_success(res, obj)
+
+
 class CustomTags(BaseResource):
     """
     Handle for endpoint: /v1/tweet/custom/tags
@@ -199,8 +287,7 @@ class CustomTags(BaseResource):
         params = req.params
         filters = {}
 
-        # HoloTwitterCustomDrawHashtag의 태그 중 holo_member_twitter_hashtag 에 존재하면서, holo_member_hashtag 에는 존재하지 않고
-        # 2달 이내에 올라온 리스트를 카운트 순으로 order by 해서 50개를 해시태그만
+        # custom tags + memberTweet tags - baseTags
         draw_tags_dbs = session.query(HoloTwitterCustomDrawHashtag) \
             .outerjoin(HoloMemberHashtag, HoloMemberHashtag.hashtag == HoloTwitterCustomDrawHashtag.hashtag) \
             .outerjoin(HoloMemberTwitterHashtag,
@@ -208,7 +295,7 @@ class CustomTags(BaseResource):
             .filter(HoloMemberHashtag.hashtag == None) \
             .filter(HoloMemberTwitterHashtag.hashtag != None) \
             .group_by(HoloTwitterCustomDrawHashtag.hashtag) \
-            .limit(50) \
+            .order_by(HoloTwitterCustomDrawHashtag.index.desc()).limit(10) \
             .all()
 
         list = alchemy.db_result_to_dict_list(draw_tags_dbs)
