@@ -32,7 +32,7 @@ class Auth(BaseResource):
     Handle for endpoint: /v1/login
     """
 
-    def on_post(self, req, res):
+    async def on_post(self, req, res):
         session = req.context["session"]
         user_req = req.context["data"]["userInfo"]
         if user_req:
@@ -73,6 +73,6 @@ class Auth(BaseResource):
         else:
             raise InvalidParameterError(req.context["data"])
 
-    def on_get(self, req, res):
+    async def on_get(self, req, res):
         res.status = falcon.HTTP_200
         res.body = self.to_json(self.HELLO_WORLD)

@@ -23,7 +23,7 @@ class Menu(BaseResource):
     """
 
     ## this list is menu name list
-    def on_get(self, req, res):
+    async def on_get(self, req, res):
         data = [
             {
                 'menu_name': '테이블',

@@ -46,7 +46,7 @@ class Collection(BaseResource):
     Handle for endpoint: /v1/member/youtube/channel/list
     """
 
-    def on_get(self, req, res):
+    async def on_get(self, req, res):
         session = req.context["session"]
 
         queryString = dict()
@@ -90,7 +90,7 @@ class List(BaseResource):
     Handle for endpoint: /v1/member/list
     """
 
-    def on_get(self, req, res):
+    async def on_get(self, req, res):
         session = req.context["session"]
         params = req.params
 
@@ -135,7 +135,7 @@ class Tags(BaseResource):
 
     # params = queryString , pathParm = req.path
 
-    def on_get(self, req, res):
+    async def on_get(self, req, res):
         session = req.context["session"]
         # member_id = req.path
         # LOG.info(f'req.path : {req.path}, member_id : {member_id}')
@@ -165,7 +165,7 @@ class Tweets(BaseResource):
     Handle for endpoint: /v1/member/tweets
     """
 
-    def on_get(self, req, res):
+    async def on_get(self, req, res):
         session = req.context["session"]
         params = req.params
 
@@ -192,7 +192,7 @@ class TweetLive(BaseResource):
     Handle for endpoint: /v1/member/tweet/live/{member_id}
     """
 
-    def on_get(self, req, res):
+    async def on_get(self, req, res):
         session = req.context["session"]
 
         # TODO get web socket for real time tweet

@@ -11,7 +11,7 @@ class CORSMiddleware(object):
         super().__init__()
         LOG.debug('CORSMiddleware Init')
 
-    def process_request(self, request, response):
+    async def process_request(self, request, response):
         origin = request.get_header('Origin')
         if origin in ALLOWED_ORIGINS:
             response.set_header('Access-Control-Allow-Origin', origin)

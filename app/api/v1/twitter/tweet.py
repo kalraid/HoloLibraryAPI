@@ -29,7 +29,7 @@ class Draws(BaseResource):
     Handle for endpoint: /v1/tweet/draws
     """
 
-    def on_get(self, req, res):
+    async def on_get(self, req, res):
         session = req.context["session"]
         params = req.params
         filters = {}
@@ -134,7 +134,7 @@ class DrawsLive:
     Handle for endpoint: /v1/tweet/draws/live
     """
 
-    def on_get(self, req, res):
+    async def on_get(self, req, res):
         session = req.context["session"]
 
         # TODO get web socket for real time tweet draws
@@ -148,7 +148,7 @@ class CustomDraws(BaseResource):
     Handle for endpoint: /v1/tweet/custom/draws
     """
 
-    def on_get(self, req, res):
+    async def on_get(self, req, res):
         session = req.context["session"]
         params = req.params
         filters = {}
@@ -200,7 +200,7 @@ class TweetInfo(BaseResource):
     Handle for endpoint: /v1/tweet/detail
     """
 
-    def on_get(self, req, res):
+    async def on_get(self, req, res):
         session = req.context["session"]
         params = req.params
         filters = {}
@@ -233,7 +233,7 @@ class TweetIds(BaseResource):
     Handle for endpoint: /v1/tweet/ids
     """
 
-    def on_get(self, req, res):
+    async def on_get(self, req, res):
         session = req.context["session"]
         params = req.params
         filters = {}
@@ -282,7 +282,7 @@ class CustomTags(BaseResource):
     Handle for endpoint: /v1/tweet/custom/tags
     """
 
-    def on_get(self, req, res):
+    async def on_get(self, req, res):
         session = req.context["session"]
         params = req.params
         filters = {}

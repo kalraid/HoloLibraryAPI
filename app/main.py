@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import falcon
+import falcon.asgi
+from uvicorn import Config
 
 import log
 from app.api.common import base
@@ -17,7 +18,7 @@ from app.middleware import AuthHandler, JSONTranslator, DatabaseSessionManager, 
 LOG = log.get_logger()
 
 
-class App(falcon.App):
+class App(falcon.asgi.App):
     def __init__(self, *args, **kwargs):
         super(App, self).__init__(*args, **kwargs)
         LOG.info("API Server is starting")
@@ -57,7 +58,10 @@ middleware = [CORSMiddleware(), AuthHandler(), JSONTranslator(), DatabaseSession
 application = App(middleware=middleware, cors_enable=True)
 
 if __name__ == "__main__":
-    from wsgiref import simple_server
+    # from wsgiref import simple_server
+    #
+    # httpd = simple_server.make_server("127.0.0.1", 8000, application)
+    # httpd.serve_forever()
 
-    httpd = simple_server.make_server("127.0.0.1", 8000, application)
-    httpd.serve_forever()
+    import uvicorn
+    uvicorn.run(application, host="127.0.0.1", port=8000, log_level="info")

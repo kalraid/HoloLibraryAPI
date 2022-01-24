@@ -34,7 +34,7 @@ class Collection(BaseResource):
     """
 
     @falcon.before(auth_required)
-    def on_get(self, req, res):
+    async def on_get(self, req, res):
         session = req.context["session"]
         user_dbs = session.query(User).all()
         if user_dbs:
@@ -44,7 +44,7 @@ class Collection(BaseResource):
             raise AppError()
 
     @falcon.before(auth_required)
-    def on_put(self, req, res):
+    async def on_put(self, req, res):
         pass
 
 
@@ -54,7 +54,7 @@ class Item(BaseResource):
     """
 
     # @falcon.before(auth_required)
-    def on_get(self, req, res, user_id):
+    async def on_get(self, req, res, user_id):
         session = req.context["session"]
         try:
             user_db = User.find_one(session, user_id)
@@ -71,14 +71,14 @@ class Self(BaseResource):
     LOGIN = "login"
     RESETPW = "resetpw"
 
-    def on_get(self, req, res):
+    async def on_get(self, req, res):
         cmd = re.split("\\W+", req.path)[-1:][0]
         if cmd == Self.LOGIN:
             self.process_login(req, res)
         elif cmd == Self.RESETPW:
             self.process_resetpw(req, res)
 
-    def process_login(self, req, res):
+    async def process_login(self, req, res):
         data = req.context["data"]
         email = data["email"]
         password = data["password"]
@@ -93,5 +93,5 @@ class Self(BaseResource):
             raise UserNotExistsError("User email: %s" % email)
 
     @falcon.before(auth_required)
-    def process_resetpw(self, req, res):
+    async def process_resetpw(self, req, res):
         pass
