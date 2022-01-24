@@ -161,18 +161,23 @@ class Menu(BaseResource):
                 'role': 'user'
             },
             {
-                'menu_name': '타임 라인',
+                'menu_name': '타임 라인 트윗',
                 'menu_id': 'M20402',
                 'role': 'user'
             },
             {
-                'menu_name': '기본 태그 트윗',
+                'menu_name': '리트윗 모음',
                 'menu_id': 'M20403',
                 'role': 'user'
             },
             {
-                'menu_name': '일회성 태그 트윗',
+                'menu_name': '기본 태그 트윗',
                 'menu_id': 'M20404',
+                'role': 'user'
+            },
+            {
+                'menu_name': '일회성 태그 트윗',
+                'menu_id': 'M20405',
                 'role': 'user'
             }
         ]

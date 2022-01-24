@@ -1,4 +1,5 @@
 from requests.exceptions import ChunkedEncodingError
+from twitter import TwitterError
 
 import log
 
@@ -106,6 +107,15 @@ with open(output_file_name, "w", encoding="utf-8") as output_file:
                                 db_session.commit()
 
             except ChunkedEncodingError as ex:  # Connection broken -> restart
+                LOG.error(traceback.format_exc())
+                LOG.error(stream)
+                tags = getHashTags()
+                ban_tags = HoloMemberTwitterHashtag().get_group_by_hashtag_not_use(db_session)
+                LOG.info(" tags len : {} ".format(len(tags)))
+                stream = twitter_api.GetStreamFilter(track=tags, filter_level="low")  # tags len max is 250
+                twitter_api.GetUserStream()
+            except TwitterError as ex:  # Exceeded connection limit for user
+                time.sleep(1 * 60 * 5) # 5 minutes
                 LOG.error(traceback.format_exc())
                 LOG.error(stream)
                 tags = getHashTags()

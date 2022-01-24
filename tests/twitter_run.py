@@ -1,4 +1,7 @@
+import time
 import traceback
+
+from twitter import TwitterError
 
 import log
 import twitter_parser
@@ -48,6 +51,12 @@ with open(output_file_name, "w", encoding="utf-8") as output_file:
                             db_session.commit()
                             repeat_cnt = 0
         except Exception as ex:
+            LOG.error(traceback.format_exc())
+            LOG.error(stream)
+            stream = twitter_api.GetStreamFilter(follow=account, filter_level="low")  # GetStreamSample #GetUserStream
+            twitter_api.GetUserStream()
+        except TwitterError as ex:  # Exceeded connection limit for user
+            time.sleep(1 * 60 * 5) # 5 minutes
             LOG.error(traceback.format_exc())
             LOG.error(stream)
             stream = twitter_api.GetStreamFilter(follow=account, filter_level="low")  # GetStreamSample #GetUserStream

@@ -1,4 +1,5 @@
 from requests.exceptions import ChunkedEncodingError
+from twitter import TwitterError
 
 import log
 
@@ -31,10 +32,9 @@ db_session = get_session()
 test_list = []
 LOG = log.get_logger()
 
-
 with open(output_file_name, "w", encoding="utf-8") as output_file:
     tags = []
-    #tags = HoloMemberTwitterHashtag().get_group_by_hashtag(db_session)
+    # tags = HoloMemberTwitterHashtag().get_group_by_hashtag(db_session)
     base_tags = HoloMemberHashtag().get_group_by_hashtag(db_session)
 
     tags.extend(base_tags)
@@ -42,7 +42,7 @@ with open(output_file_name, "w", encoding="utf-8") as output_file:
     if tags:
         ban_tags = HoloMemberTwitterHashtag().get_group_by_hashtag_not_use(db_session)
         LOG.info(" tags len : {} ".format(len(tags)))
-        stream = twitter_api.GetStreamFilter(track=tags, filter_level="low")   # tags len max is 250
+        stream = twitter_api.GetStreamFilter(track=tags, filter_level="low")  # tags len max is 250
         twitter_api.GetUserStream()
 
         while True:
@@ -96,7 +96,15 @@ with open(output_file_name, "w", encoding="utf-8") as output_file:
                 LOG.error(stream)
                 ban_tags = HoloMemberTwitterHashtag().get_group_by_hashtag_not_use(db_session)
                 LOG.info(" tags len : {} ".format(len(tags)))
-                stream = twitter_api.GetStreamFilter(track=tags, filter_level="low")   # tags len max is 250
+                stream = twitter_api.GetStreamFilter(track=tags, filter_level="low")  # tags len max is 250
+                twitter_api.GetUserStream()
+            except TwitterError as ex:  # Exceeded connection limit for user
+                time.sleep(1 * 60 * 5) # 5 minutes
+                LOG.error(traceback.format_exc())
+                LOG.error(stream)
+                ban_tags = HoloMemberTwitterHashtag().get_group_by_hashtag_not_use(db_session)
+                LOG.info(" tags len : {} ".format(len(tags)))
+                stream = twitter_api.GetStreamFilter(track=tags, filter_level="low")  # tags len max is 250
                 twitter_api.GetUserStream()
     else:
         LOG.info("tags is empty")
