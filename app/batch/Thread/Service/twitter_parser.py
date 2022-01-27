@@ -4,14 +4,20 @@ import dateutil
 
 import log
 from app.database import get_session
-from app.model import HoloMemberTweet, HoloMemberTwitterInfo, HoloMemberTwitterHashtag, HoloMemberTwitterMention, HoloMemberTwitterUrl, HoloMemberTwitterMedia
+from app.model import HoloMemberTweet, HoloMemberTwitterInfo, HoloMemberTwitterHashtag, HoloMemberTwitterMention, \
+    HoloMemberTwitterUrl, HoloMemberTwitterMedia
+
+__name__ = "twitter_parser"
+__version__ = "0.0.1"
 
 db_session = get_session()
 test_list = list
 
 LOG = log.get_logger()
 
-def tweet_parse(self, tweet, ban_tags):
+
+def tweet_parse(tweet, ban_tags) -> HoloMemberTweet:
+    LOG.info(f'tweet_parse start')
     tweet_type = "BASE"
     holoMemberTweet = HoloMemberTweet()
 
@@ -56,24 +62,24 @@ def tweet_parse(self, tweet, ban_tags):
         holoMemberTweet.holo_member_twitter_mention = mentions
 
     if entities is not None and "hashtags" in entities and entities["hashtags"]:
-        #holoMemberTweet.hashtags = list(set(map(lambda i: i["text"], entities["hashtags"])))
+        # holoMemberTweet.hashtags = list(set(map(lambda i: i["text"], entities["hashtags"])))
         hashtags = []
         for i in entities["hashtags"]:
             holoMemberTwitterHashtag = HoloMemberTwitterHashtag()
             holoMemberTwitterHashtag.holo_member_tweet_id = holoMemberTweet.tweet_id
-            holoMemberTwitterHashtag.hashtag = "#"+i["text"]
+            holoMemberTwitterHashtag.hashtag = "#" + i["text"]
             holoMemberTwitterHashtag.datatype = "tweet"
             holoMemberTwitterHashtag.tagtype = "test2"
 
             if i in ban_tags:
-                holoMemberTwitterHashtag.isUse="N"
+                holoMemberTwitterHashtag.isUse = "N"
 
             hashtags.append(holoMemberTwitterHashtag)
 
         holoMemberTweet.holo_member_twitter_hashtag = hashtags
 
     if entities is not None and "urls" in entities and entities["urls"]:
-        #holoMemberTweet.urls = list(set(map(lambda i: i["expanded_url"], entities["urls"])))
+        # holoMemberTweet.urls = list(set(map(lambda i: i["expanded_url"], entities["urls"])))
         urls = []
         for i in entities["urls"]:
             holoMemberTwitterUrl = HoloMemberTwitterUrl()
@@ -84,7 +90,7 @@ def tweet_parse(self, tweet, ban_tags):
         holoMemberTweet.holo_member_twitter_url = urls
 
     if entities is not None and "media" in entities and entities["media"]:
-        #holoMemberTweet.media = list(set(map(lambda i: i["media_url"], entities["media"])))
+        # holoMemberTweet.media = list(set(map(lambda i: i["media_url"], entities["media"])))
         media = []
         for i in entities["media"]:
             holoMemberTwitterMedia = HoloMemberTwitterMedia()

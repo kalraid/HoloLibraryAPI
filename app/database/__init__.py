@@ -33,7 +33,6 @@ engine = get_engine(config.DATABASE_URL)
 
 
 def get_session():
-    init_session()
     return db_session
 
 

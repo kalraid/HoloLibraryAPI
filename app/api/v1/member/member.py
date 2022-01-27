@@ -4,6 +4,9 @@ import re
 
 import falcon
 import requests
+from falcon.asgi import Request, WebSocket
+from falcon.constants import WebSocketPayloadType
+from falcon.errors import WebSocketDisconnected
 from sqlalchemy.orm.exc import NoResultFound
 from collections import defaultdict
 
@@ -159,7 +162,6 @@ class Tags(BaseResource):
         self.on_success(res, obj)
 
 
-
 class Tweets(BaseResource):
     """
     Handle for endpoint: /v1/member/tweets
@@ -173,7 +175,8 @@ class Tweets(BaseResource):
         if 'member_id' in params and params['member_id']:
             member_id = params['member_id']
             tweet_dbs = session.query(HoloMemberTweet) \
-                .join(HoloMemberTwitterInfo, HoloMemberTwitterInfo.twitter_id == HoloMemberTweet.holo_member_twitter_info_id) \
+                .join(HoloMemberTwitterInfo,
+                      HoloMemberTwitterInfo.twitter_id == HoloMemberTweet.holo_member_twitter_info_id) \
                 .filter(HoloMemberTwitterInfo.member_id == member_id) \
                 .order_by(HoloMemberTweet.created.desc()).limit(100).all()
 
@@ -189,7 +192,7 @@ class Tweets(BaseResource):
 
 class TweetLive(BaseResource):
     """
-    Handle for endpoint: /v1/member/tweet/live/{member_id}
+    Handle for endpoint: /v1/member/tweet/live
     """
 
     async def on_get(self, req, res):
@@ -199,3 +202,64 @@ class TweetLive(BaseResource):
 
         obj = {'data': None}
         self.on_success(res, obj)
+
+    async def on_websocket(self, req: Request, socket: WebSocket):
+
+        LOG.info("----- /v1/member/tweet/live websocket init start ---------")
+        LOG.info(req)
+        # any headder is websocket close rule
+        # some_header_value = req.get_header('Some-Header')
+        #
+        # if some_header_value:
+        #
+        #     await socket.close()
+        #     return
+        # Examine subprotocols advertised by the client. Here let's just
+        #   assume we only support wamp, so if the client doesn't advertise
+        #   it we reject the connection.
+        if 'live_tweet' not in socket.subprotocols:
+            # If close() is not called explicitly, the framework will
+            #   take care of it automatically with the default code (1000).
+            return
+
+        # If, after examining the connection info, you would like to accept
+        #   it, simply call accept() as follows:
+
+        try:
+            await socket.accept(subprotocol='live_tweet')
+        except WebSocketDisconnected:
+            LOG.error("member websocket WebSocketDisconnected - not accepted")
+            return
+        # simple send
+        while True:
+
+            try:
+                LOG.info(f"---|  socket.ready :{socket.ready}  |--- ")
+                # listen by batch
+
+                # payload_str = await socket.receive_text()
+                media_object = await socket.receive_media()
+                LOG.info(f'---| media_object : {media_object} |--- ')
+                # send to web
+
+                # await socket.send_text(event)  # TEXT
+                sending = await socket.send_media(media_object)
+                LOG.info(f'---|  sending : {sending}  |--- ')
+
+            except WebSocketDisconnected:
+                LOG.error("member websocket WebSocketDisconnected")
+
+                # Do any necessary cleanup, then bail out
+                return
+            except TypeError:
+                LOG.error("member websocket TypeError")
+
+                # The received message payload was not of the expected
+                #   type (e.g., got BINARY when TEXT was expected).
+                pass
+            except json.JSONDecodeError:
+                LOG.error("member websocket JSONDecodeError")
+
+                # The default media deserializer uses the json standard
+                #   library, so you might see this error raised as well.
+                pass

@@ -13,7 +13,7 @@ from app.api.v1.user import users
 from app.api.v1.member import member
 from app.database import db_session, init_session
 from app.errors import AppError
-from app.middleware import AuthHandler, JSONTranslator, DatabaseSessionManager, CORSMiddleware
+from app.middleware import AuthHandler, JSONTranslator, DatabaseSessionManager, CORSMiddleware, WebsocketHandler
 
 LOG = log.get_logger()
 
@@ -27,7 +27,6 @@ class App(falcon.asgi.App):
         self.add_route("/v1/login", login.Auth())
 
         self.add_route("/v1/menu/list", menu.Menu())
-
 
         self.add_route("/v1/users", users.Collection())
         self.add_route("/v1/users/{user_id}", users.Item())
@@ -54,7 +53,7 @@ class App(falcon.asgi.App):
 
 
 init_session()
-middleware = [CORSMiddleware(), AuthHandler(), JSONTranslator(), DatabaseSessionManager(db_session)]
+middleware = [CORSMiddleware(), AuthHandler(), JSONTranslator(), DatabaseSessionManager(db_session), WebsocketHandler()]
 application = App(middleware=middleware, cors_enable=True)
 
 if __name__ == "__main__":
@@ -64,4 +63,6 @@ if __name__ == "__main__":
     # httpd.serve_forever()
 
     import uvicorn
-    uvicorn.run(application, host="127.0.0.1", port=8000, log_level="info")
+
+    uvicorn.run(application, host="127.0.0.1", port=8000, log_level="info", ws_ping_interval=10, ws_per_message_deflate = True,
+                ws_ping_timeout=60 * 60, timeout_keep_alive=60 * 5)

@@ -83,7 +83,7 @@ Linux
 In Linux, just set `APP_ENV` to run in live mode.
 ```shell
 export APP_ENV=live
-./bin/run.sh start
+./bin/Run.sh start
 ```
 
 Heroku
