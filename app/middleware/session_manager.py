@@ -16,17 +16,17 @@ class DatabaseSessionManager(object):
         self._session_factory = db_session
         self._scoped = isinstance(db_session, scoping.ScopedSession)
 
-    def process_request(self, req, res, resource=None):
+    async def process_request(self, req, res, resource=None):
         """
         Handle post-processing of the response (after routing).
         """
         req.context["session"] = self._session_factory
 
-    def process_response(self, req, res, resource=None, req_succeeded=None):
+    async def process_response(self, req, res, resource=None, req_succeeded=None):
         """
         Handle post-processing of the response (after routing).
         """
-        if req.method is not "OPTIONS":
+        if req.method != "OPTIONS":
             session = req.context["session"]
             try:
                 if config.DB_AUTOCOMMIT:

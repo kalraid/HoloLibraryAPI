@@ -2,6 +2,7 @@
 
 from sqlalchemy import Column
 from sqlalchemy import String
+from sqlalchemy.orm import relationship, backref
 
 from app.model import Base
 
@@ -14,6 +15,7 @@ class HoloMemberCh(Base):
     channel_url = Column(String(400), unique=True, nullable=False)
     member_name = Column(String(80), nullable=False)  ## == holo_member.name
     company_name = Column(String(200), nullable=False)  ## == holo_company.name
+    # member = relationship("HoloMember", backref="holo_member_channel")
 
     def __repr__(self):
         return "<HoloMemberCh(channel_id='%s', channel_name='%s', member_name='%s', channel_url='%s')>" % (

@@ -1,19 +1,15 @@
 # -*- coding: utf-8 -*-
 import threading
 import time
+
 import requests
 from dateutil.parser import parse
 from sqlalchemy.exc import SQLAlchemyError
 
-from app import config
-
-from six import Iterator
-
 import log
 from app.errors import DatabaseError, ERR_DATABASE_ROLLBACK
-
-from app.model.user_static_youbute import UserStaticYoutube
 from app.model.holo_member_ch import HoloMemberCh
+from app.model.user_static_youbute import UserStaticYoutube
 
 LOG = log.get_logger()
 
@@ -85,6 +81,9 @@ class AnalysisSubscribeThread(threading.Thread):
 
                 if title.find("Ch") > -1:
                     user_static_youtube.member_name = title[0: int(title.index("Ch")) - 1]
+
+                if title.find("ch") > -1:
+                    user_static_youtube.member_name = title[0: int(title.index("ch")) - 1]
 
                 elif title.find("Channel") > -1:
                     user_static_youtube.member_name = title[0: int(title.index("Channel")) - 1]

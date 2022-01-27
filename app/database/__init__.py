@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import create_engine
+from sqlalchemy.exc import ProgrammingError
 from sqlalchemy.orm import sessionmaker, scoped_session
-from app.module.google_api.drive import getinitdatasheet
 
 import log
 from app import config
+from app.model import Base
+from .init_holo_member import get_member_data
+from .init_holo_member_ch import get_channel_data
+from .init_holo_member_twitter import get_twitter_data
+from .init_holo_member_twitter_tags import get_twitter_tags_data
 
 LOG = log.get_logger()
 
@@ -27,38 +32,76 @@ db_session = scoped_session(sessionmaker())
 engine = get_engine(config.DATABASE_URL)
 
 
+def get_session():
+    return db_session
+
+
 def init_session():
     db_session.configure(bind=engine)
 
-    from app.model import Base
+    #__init_table__()
+    #__init_data__()
 
-    # Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
 
-    __init_data__()
+def __init_table__():
+
+    #drop_all(engine)
+    create_all(engine)
 
 
 def __init_data__():
-    from app.model.holo_member_ch import HoloMemberCh
+    get_member_data(db_session)
+    get_channel_data(db_session)
+    get_twitter_data(db_session)
+    get_twitter_tags_data(db_session)
 
-    db_session.query(HoloMemberCh).count()
-    df = getinitdatasheet()
 
-    for index, data_row in df.iterrows():
-        holoMemberCh = HoloMemberCh()
+def drop_all(engine):
+    metadata = Base.metadata
+    engine_name = engine.name
+    foreign_key_turn_off = {
+        'mysql': 'SET FOREIGN_KEY_CHECKS=0;',
+        'postgresql': 'SET CONSTRAINTS ALL DEFERRED;',
+        'sqlite': 'PRAGMA foreign_keys = OFF;',
+    }
+    foreign_key_turn_on = {
+        'mysql': 'SET FOREIGN_KEY_CHECKS=1;',
+        'postgresql': 'SET CONSTRAINTS ALL IMMEDIATE;',
+        'sqlite': 'PRAGMA foreign_keys = ON;',
+    }
+    truncate_query = {
+        'mysql': 'DROP TABLE IF EXISTS {};',
+        'postgresql': 'TRUNCATE TABLE {} RESTART IDENTITY CASCADE;',
+        'sqlite': 'DELETE FROM {};',
+    }
 
-        index = data_row[1]
-        contry_type = data_row[2]
-        ordinal_type = data_row[3]
+    with engine.begin() as conn:
+        conn.execute(foreign_key_turn_off[engine.name])
 
-        holoMemberCh.company_name = data_row[0]
-        holoMemberCh.member_name = data_row[3]
-        holoMemberCh.channel_name = data_row[4]
-        holoMemberCh.channel_id = data_row[5]
-        holoMemberCh.channel_url = data_row[6]
+        for table in reversed(metadata.sorted_tables):
+            try:
+                conn.execute(truncate_query[engine.name].format(table.name))
+            except ProgrammingError as error:
+                print(error)
+        conn.execute(foreign_key_turn_on[engine.name])
 
-        item = db_session.query(HoloMemberCh).filter(HoloMemberCh.channel_id == holoMemberCh.channel_id).first()
-        if item is None:
-            db_session.add(holoMemberCh)
 
-    db_session.commit()
+def create_all(engine):
+    metadata = Base.metadata # 여러분의 Base를 가져오세요!
+    engine_name = engine.name
+    foreign_key_turn_off = {
+        'mysql': 'SET FOREIGN_KEY_CHECKS=0;',
+        'postgresql': 'SET CONSTRAINTS ALL DEFERRED;',
+        'sqlite': 'PRAGMA foreign_keys = OFF;',
+    }
+    foreign_key_turn_on = {
+        'mysql': 'SET FOREIGN_KEY_CHECKS=1;',
+        'postgresql': 'SET CONSTRAINTS ALL IMMEDIATE;',
+        'sqlite': 'PRAGMA foreign_keys = ON;',
+    }
+    with engine.begin() as conn:
+        conn.execute(foreign_key_turn_off[engine.name])
+        Base.metadata.create_all(engine)
+        conn.execute(foreign_key_turn_on[engine.name])
+
+
