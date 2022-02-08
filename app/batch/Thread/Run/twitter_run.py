@@ -70,12 +70,16 @@ def twitter_subthread():
                             db_session.add(tweet_parse_result)
                             # test_list.append({tweet_parse_result})
                             db_session.commit()
-
-                            sending_data = {"tweet_id": tweet_parse_result.tweet_id,
+                            if tweet_parse_result.rt_tweet_id is not None:
+                                tweet_id = tweet_parse_result.rt_tweet_id
+                            else:
+                                tweet_id = tweet_parse_result.tweet_id
+                            sending_data = {"tweet_id": tweet_id,
                                             "member_id": tweet_parse_result.holo_member_twitter_info.member_id}
                             sending_list.append(sending_data)
                             LOG.info(" ----| sending_list data insert |----")
         except Exception as ex:
+            LOG.info('-------------------------------------------------2---------------------------')
             LOG.error(traceback.format_exc())
             LOG.error(stream)
             stream = twitter_api.GetStreamFilter(follow=account, filter_level="low")
@@ -103,6 +107,8 @@ async def init_websocket():
                             LOG.info(f'websocket result : {result}')
                             message = await ws.recv()
                             LOG.info(f'websocket message : {message} ')
+                    except ConnectionClosed:
+                        break
                     except Exception as ex:
                         LOG.error(traceback.format_exc())
                         LOG.error(ex)

@@ -1,25 +1,13 @@
 # -*- coding: utf-8 -*-
+from sqlalchemy import func, desc
 
-import re
-
-import falcon
-import requests
-from sqlalchemy.orm.exc import NoResultFound
-from collections import defaultdict
-
-import log, json
+import log
 from app.api.common import BaseResource
-from app.errors import (
-    AppError,
-    UserNotExistsError,
-    PasswordNotMatch,
-)
-from app.model import User, UserStaticYoutube, HoloMemberCh, HoloMember, HoloTwitterDraw, HoloMemberTwitterInfo, \
+from app.errors import NotSupportedError
+from app.model import HoloTwitterDraw, HoloMemberTwitterInfo, \
     HoloMemberTweet, HoloMemberHashtag, HoloTwitterDrawHashtag, HoloTwitterCustomDraw, HoloTwitterCustomDrawHashtag, \
-    HoloMemberTwitterHashtag
+    HoloMemberTwitterHashtag, HoloTwitterDrawHist
 from app.utils import alchemy
-from app.utils.auth import verify_password
-from app.utils.hooks import auth_required
 
 LOG = log.get_logger()
 
@@ -68,7 +56,7 @@ class Draws(BaseResource):
                     .join(HoloMemberHashtag, HoloMemberHashtag.hashtag == HoloTwitterDrawHashtag.hashtag) \
                     .filter(HoloMemberHashtag.member_id == member_id) \
                     .filter(HoloMemberHashtag.tagtype.in_(type_list)) \
-                    .order_by(HoloTwitterDraw.created.desc()).limit(100) \
+                    .order_by(HoloTwitterDraw.created.desc()).limit(12 * 50) \
                     .all()
                 filters['type'] = type_param
 
@@ -129,21 +117,42 @@ class Draws(BaseResource):
         self.on_success(res, obj)
 
 
-class DrawsLive:
+class DrawsLive(BaseResource):
     """
     Handle for endpoint: /v1/tweet/draws/live
     """
 
     async def on_get(self, req, res):
         session = req.context["session"]
+        params = req.params
+        filters = {}
+        if 'type' in params and params['type']:
 
-        # TODO get web socket for real time tweet draws
+            type = params['type']
+            LOG.info(f'type : {type}')
+            if type == 'random':
+                draw_dbs = session.query(HoloTwitterDraw) \
+                    .join(HoloTwitterDrawHashtag) \
+                    .join(HoloMemberHashtag, HoloTwitterDrawHashtag.hashtag == HoloMemberHashtag.hashtag) \
+                    .where(HoloMemberHashtag.tagtype == 'fanart').order_by(func.rand()).limit(60 * 60).all()
+            elif type == 'recomanded':
+                Ids = session.query(HoloTwitterDrawHist.holo_twitter_draw_id) \
+                    .group_by(HoloTwitterDrawHist.holo_twitter_draw_id) \
+                    .where(HoloTwitterDrawHist.holo_twitter_draw_id != None) \
+                    .order_by(desc(func.count(HoloTwitterDrawHist.index))) \
+                    .limit(60 * 60).all()
+                draw_dbs = session.query(HoloTwitterDraw).where(HoloTwitterDraw.index.in_(Ids)).limit(60 * 60).all()
+            else:
+                draw_dbs = session.query(HoloTwitterDraw).order_by(func.rand()).limit(60 * 60).all()
 
-        obj = {'data': None}
+            filters['type'] = type
+        else:
+            raise NotSupportedError("GET", "/v1/tweet/draws/live")
+
+        list = alchemy.db_result_to_dict_list(draw_dbs)
+
+        obj = {'len': len(list), 'filters': filters, 'tweet_list': list}
         self.on_success(res, obj)
-
-
-
 
 
 class CustomDraws(BaseResource):

@@ -17,5 +17,6 @@ from .holo_twitter_draw_hashtag import HoloTwitterDrawHashtag
 from .holo_twitter_custom_draw import HoloTwitterCustomDraw
 from .holo_twitter_custom_draw_hashtag import HoloTwitterCustomDrawHashtag
 from .holo_member_twitter_info import HoloMemberTwitterInfo
+from .holo_twitter_draw_hist import HoloTwitterDrawHist
 from .user import User
 from .user_static_youbute import UserStaticYoutube

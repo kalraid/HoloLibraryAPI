@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+import json
 
 import falcon.asgi
+from falcon_swagger_ui.resources import SwaggerUiResource
 from uvicorn import Config
 
 import log
@@ -14,6 +16,8 @@ from app.api.v1.member import member
 from app.database import db_session, init_session
 from app.errors import AppError
 from app.middleware import AuthHandler, JSONTranslator, DatabaseSessionManager, CORSMiddleware, WebsocketHandler
+import pathlib
+from falcon_swagger_ui import register_swaggerui_app, StaticSinkAdapter
 
 LOG = log.get_logger()
 
@@ -51,7 +55,6 @@ class App(falcon.asgi.App):
 
         self.add_error_handler(AppError, AppError.handle)
 
-
 init_session()
 middleware = [CORSMiddleware(), AuthHandler(), JSONTranslator(), DatabaseSessionManager(db_session), WebsocketHandler()]
 application = App(middleware=middleware, cors_enable=True)
@@ -64,5 +67,6 @@ if __name__ == "__main__":
 
     import uvicorn
 
-    uvicorn.run(application, host="127.0.0.1", port=8000, log_level="info", ws_ping_interval=10, ws_per_message_deflate = True,
+    uvicorn.run(application, host="127.0.0.1", port=8000, log_level="info", ws_ping_interval=10,
+                ws_per_message_deflate=True,
                 ws_ping_timeout=60 * 60, timeout_keep_alive=60 * 5)
