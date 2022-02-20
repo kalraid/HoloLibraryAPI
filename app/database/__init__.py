@@ -9,8 +9,10 @@ from app import config
 from app.model import Base
 from .init_holo_member import get_member_data
 from .init_holo_member_ch import get_channel_data
+from .init_holo_member_img import get_member_img_data
 from .init_holo_member_twitter import get_twitter_data
 from .init_holo_member_twitter_tags import get_twitter_tags_data
+from .init_youtube_banner import get_youtube_banner
 
 LOG = log.get_logger()
 
@@ -39,8 +41,8 @@ def get_session():
 def init_session():
     db_session.configure(bind=engine)
 
-    __init_table__()
-    __init_data__()
+    #__init_table__()
+    #__init_data__()
 
 
 def __init_table__():
@@ -52,9 +54,10 @@ def __init_table__():
 def __init_data__():
     get_member_data(db_session)
     get_channel_data(db_session)
+    get_member_img_data(db_session) # TODO need duplicate check
     get_twitter_data(db_session)
-    get_twitter_tags_data(db_session)
-
+    get_twitter_tags_data(db_session)  # TODO need duplicate check
+    get_youtube_banner(db_session) # TODO need duplicate check
 
 def drop_all(engine):
     metadata = Base.metadata

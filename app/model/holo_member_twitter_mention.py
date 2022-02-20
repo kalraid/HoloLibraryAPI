@@ -26,6 +26,6 @@ class HoloMemberTwitterMention(Base):
     def get_id(cls):
         return HoloMemberTwitterMention.index
 
-    FIELDS = {"mention_user": String}
+    FIELDS = {"mention_user": str}
 
     FIELDS.update(Base.FIELDS)

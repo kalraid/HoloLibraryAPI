@@ -1,30 +1,6 @@
-# Decorator
-def constant(func):
-    def func_set(self, value):
-        raise TypeError
-
-    def func_get(self):
-        return func()
-    return property(func_get, func_set)
-
-# const class
-class _Const(object):
-    @constant
-    def PAGE_INDEX(self):
-        return "/index"
-
-    @constant
-    def PAGE_MEMBER_LOGIN(self):
-        return "/member/login"
-
-    @constant
-    def PAGE_MEMBER_LOGOUT(self):
-        return "/member/logout"
-
-CONST = _Const()
-
-print(CONST.PAGE_INDEX) # /index
-print(CONST.PAGE_MEMBER_LOGIN) # /member/login
-print(CONST.PAGE_MEMBER_LOGOUT) # /member/logout
-
-CONST.PAGE_MEMBER_LOGIN = "another_page" # TypeError
+class CONST(object):
+    __slots__ = ()
+    TWITTER_CONSUMER_KEY = "LyJRYgDOXyXgkEwVfCzZdvYZx"
+    TWITTER_CONSUMER_SECRET =  "GJqGw39xTKs63CQB84vvxuhAnLifVPIkeYHehNH7pypGwGqjoq"
+    TWITTER_ACCESS_TOKEN =  "1433414457179312128-Rk4M7AhwcoOS5l4vGLHpGhZPU5RT6Y"
+    TWITTER_ACCESS_SECRET = "MOsBpp5QYq8lhwZXGdXsDNTrSftcAod7kAoPSRVC5f5hh"

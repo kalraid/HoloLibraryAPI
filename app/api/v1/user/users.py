@@ -7,7 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 import log
 from app.api.common import BaseResource
-from app.api.v1.static.thread.analysis import AnalysisSubscribeThread
+from app.api.v1.statistics.thread.analysis import AnalysisSubscribeThread
 from app.errors import (
     AppError,
     InvalidParameterError,

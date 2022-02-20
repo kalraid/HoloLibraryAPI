@@ -19,7 +19,7 @@ from app.errors import (
 )
 from app.utils import alchemy
 from app.model import User, UserStaticYoutube, HoloMemberCh, HoloMember, HoloMemberHashtag, HoloMemberTweet, \
-    HoloMemberTwitterInfo
+    HoloMemberTwitterInfo, HoloMemberImage
 from app.utils.auth import verify_password
 from app.utils.hooks import auth_required
 
@@ -100,34 +100,59 @@ class List(BaseResource):
         filters = {}
         if 'index' in params and params['index']:
             member_index = params['index']
-            member_dbs = session.query(HoloMember).filter(HoloMember.index == member_index).first()
+            member_dbs = session.query(HoloMember, HoloMemberImage.img_url).join(HoloMemberImage,
+                                                                                 HoloMemberImage.member_id == HoloMember.index).filter(
+                HoloMemberImage.img_type == 'small').filter(HoloMember.index == member_index).first()
             filters['member_index'] = member_index
 
         elif 'member_id' in params and params['member_id']:
             member_id = params['member_id']
-            member_dbs = session.query(HoloMember).filter(HoloMember.index == member_id).first()
+            member_dbs = session.query(HoloMember, HoloMemberImage.img_url).join(HoloMemberImage,
+                                                                                 HoloMemberImage.member_id == HoloMember.index).filter(
+                HoloMemberImage.img_type == 'small').filter(HoloMember.index == member_id).first()
             filters['member_index'] = member_id
 
         elif 'member_name_kor' in params and params['member_name_kor']:
             member_name_kor = params['member_name_kor']
-            member_dbs = session.query(HoloMember).filter(HoloMember.member_name_kor == member_name_kor).first()
+            member_dbs = session.query(HoloMember, HoloMemberImage.img_url).join(HoloMemberImage,
+                                                                                 HoloMemberImage.member_id == HoloMember.index).filter(
+                HoloMemberImage.img_type == 'small').filter(HoloMember.member_name_kor == member_name_kor).first()
             filters['member_name_kor'] = member_name_kor
 
         elif 'member_name_eng' in params and params['member_name_eng']:
             member_name_eng = params['member_name_eng']
-            member_dbs = session.query(HoloMember).filter(HoloMember.member_name_eng == member_name_eng).first()
+            member_dbs = session.query(HoloMember, HoloMemberImage.img_url).join(HoloMemberImage,
+                                                                                 HoloMemberImage.member_id == HoloMember.index).filter(
+                HoloMemberImage.img_type == 'small').filter(HoloMember.member_name_eng == member_name_eng).first()
             filters['member_name_eng'] = member_name_eng
 
         elif 'member_name' in params and params['member_name']:
             member_name = params['member_name']
-            member_dbs = session.query(HoloMember).filter(HoloMember.member_name_eng == member_name).first()
+            member_dbs = session.query(HoloMember, HoloMemberImage.img_url).join(HoloMemberImage,
+                                                                                 HoloMemberImage.member_id == HoloMember.index).filter(
+                HoloMemberImage.img_type == 'small').filter(HoloMember.member_name_eng == member_name).first()
             filters['member_name_eng'] = member_name
         else:
-            member_dbs = session.query(HoloMember).all()
+            member_dbs = session.query(HoloMember, HoloMemberImage.img_url).join(HoloMemberImage,
+                                                                                 HoloMemberImage.member_id == HoloMember.index).filter(
+                HoloMemberImage.img_type == 'small').all()
 
-        data = alchemy.db_result_to_dict_list(member_dbs)
+        # data = alchemy.db_result_to_dict_list(member_dbs)
+        list = []
+        if type(list) == type(member_dbs) and len(member_dbs) > 1:
+            for i in member_dbs:
+                temp = i[0].to_dict()
+                temp['img_url'] = i[1]
 
-        obj = {'len': len(data), 'filters': filters, 'member_list': data}
+                list.append(temp)
+        else:
+            if member_dbs is not None and len(member_dbs) != 0:
+                temp = member_dbs[0].to_dict()
+                temp['img_url'] = member_dbs[1]
+
+                list.append(temp)
+
+        obj = {'len': len(list), 'filters': filters, 'member_list': list}
         self.on_success(res, obj)
 
 
@@ -160,6 +185,9 @@ class Tags(BaseResource):
 
         obj = {'len': len(data), 'filters': filters, 'tag_list': data}
         self.on_success(res, obj)
+
+
+connection_clients = []
 
 
 class Tweets(BaseResource):
@@ -197,16 +225,56 @@ class TweetLive(BaseResource):
 
     async def on_get(self, req, res):
         session = req.context["session"]
+        params = req.params
 
-        # TODO get web socket for real time tweet
+        filters = {}
+        if 'member_id' in params and params['member_id']:
+            member_id = params['member_id']
+            tweet_dbs = session.query(HoloMemberTweet, HoloMemberTwitterInfo.index) \
+                .join(HoloMemberTwitterInfo) \
+                .order_by(HoloMemberTweet.index.desc()).limit(1).all()
 
-        obj = {'data': None}
+            filters['member_id'] = member_id
+        elif 'type' in params and params['type'] == "only":
+            tweet_dbs = session.query(HoloMemberTweet, HoloMemberTwitterInfo.index) \
+                .join(HoloMemberTwitterInfo) \
+                .order_by(HoloMemberTweet.index.desc()).limit(1).all()
+
+            filters['type'] = params['type']
+        else:
+            tweet_dbs = session.query(HoloMemberTweet, HoloMemberTwitterInfo.index) \
+                .join(HoloMemberTwitterInfo) \
+                .order_by(HoloMemberTweet.index.desc()) \
+                .group_by(HoloMemberTweet.holo_member_twitter_info_id).all()
+
+        # list = alchemy.db_result_to_dict_list(tweet_dbs)
+        list = []
+        if type(list) == type(tweet_dbs) and len(tweet_dbs) > 1:
+            for i in tweet_dbs:
+                temp = i[0].to_dict()
+                if temp['rt_tweet_id'] is not None:
+                    temp['tweet_id'] = temp['rt_tweet_id']
+                temp['member_id'] = i[1]
+
+                list.append(temp)
+        else:
+            if tweet_dbs is not None and len(tweet_dbs) != 0:
+                temp = tweet_dbs[0][0].to_dict()
+                if 'rt_tweet_id' in temp and temp['rt_tweet_id'] is not None:
+                    temp['tweet_id'] = temp['rt_tweet_id']
+
+                temp['member_id'] = tweet_dbs[0][1]
+
+                list.append(temp)
+
+        obj = {'len': len(list), 'filters': filters, 'tweet_list': list}
         self.on_success(res, obj)
 
     async def on_websocket(self, req: Request, socket: WebSocket):
-
+        global connection_clients
         LOG.info("----- /v1/member/tweet/live websocket init start ---------")
         LOG.info(req)
+
         # any headder is websocket close rule
         # some_header_value = req.get_header('Some-Header')
         #
@@ -227,28 +295,35 @@ class TweetLive(BaseResource):
 
         try:
             await socket.accept(subprotocol='live_tweet')
+            connection_clients.append(socket)
+            LOG.info(connection_clients)
         except WebSocketDisconnected:
             LOG.error("member websocket WebSocketDisconnected - not accepted")
+            if socket in connection_clients:
+                connection_clients.remove(socket)
+                LOG.info(connection_clients)
             return
         # simple send
         while True:
-
             try:
-                LOG.info(f"---|  socket.ready :{socket.ready}  |--- ")
+                # LOG.info(f"---|  socket.ready :{socket.ready}  |--- ")
                 # listen by batch
 
                 # payload_str = await socket.receive_text()
                 media_object = await socket.receive_media()
-                LOG.info(f'---| media_object : {media_object} |--- ')
+                # LOG.info(f'---| media_object : {media_object} |--- ')
                 # send to web
 
                 # await socket.send_text(event)  # TEXT
-                sending = await socket.send_media(media_object)
-                LOG.info(f'---|  sending : {sending}  |--- ')
+                for i in connection_clients:
+                    sending = await i.send_media(media_object)
+                # LOG.info(f'---|  sending : {media_object}  |--- ')
 
             except WebSocketDisconnected:
                 LOG.error("member websocket WebSocketDisconnected")
-
+                if socket in connection_clients:
+                    connection_clients.remove(socket)
+                    LOG.info(connection_clients)
                 # Do any necessary cleanup, then bail out
                 return
             except TypeError:
@@ -263,3 +338,29 @@ class TweetLive(BaseResource):
                 # The default media deserializer uses the json standard
                 #   library, so you might see this error raised as well.
                 pass
+
+
+class Customes(BaseResource):
+    """
+    Handle for endpoint: /v1/member/customes
+    """
+
+    async def on_get(self, req, res):
+        session = req.context["session"]
+        params = req.params
+
+        filters = {}
+        if 'member_id' in params and params['member_id']:
+            member_id = params['member_id']
+            customes = session.query(HoloMemberImage) \
+                .filter(HoloMemberImage.img_type == 'large') \
+                .filter(HoloMemberImage.member_id == member_id).all()
+
+            filters['member_id'] = member_id
+        else:
+            customes = session.query(HoloMemberImage) \
+                .filter(HoloMemberImage.img_type == 'large').all()
+        data = alchemy.db_result_to_dict_list(customes)
+
+        obj = {'len': len(data), 'filters': filters, 'customes_list': data}
+        self.on_success(res, obj)

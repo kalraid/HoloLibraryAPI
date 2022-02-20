@@ -95,7 +95,17 @@ def tweet_parse(tweet, ban_tags) -> HoloMemberTweet:
         for i in entities["media"]:
             holoMemberTwitterMedia = HoloMemberTwitterMedia()
             holoMemberTwitterMedia.holo_member_tweet_id = holoMemberTweet.tweet_id
-            holoMemberTwitterMedia.media_link = i["media_url"]
+            media_url = i["media_url"]
+            if 'media' in media_url:
+                holoMemberTwitterMedia.media_type = 'img'
+            elif 'ext_tw_video_thumb' in media_url:
+                holoMemberTwitterMedia.media_type = 'ext_video'
+            elif '_video_thumb' in media_url:
+                holoMemberTwitterMedia.media_type = 'ot_video'
+            else:
+                holoMemberTwitterMedia.media_type = 'other'
+
+            holoMemberTwitterMedia.media_link = media_url
             media.append(holoMemberTwitterMedia)
 
         holoMemberTweet.holo_member_twitter_media = media

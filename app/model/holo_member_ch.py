@@ -15,14 +15,18 @@ class HoloMemberCh(Base):
     channel_url = Column(String(400), unique=True, nullable=False)
     member_name = Column(String(80), nullable=False)  ## == holo_member.name
     company_name = Column(String(200), nullable=False)  ## == holo_company.name
+    channel_profile_img_url = Column(String(300), nullable = True)
+    channel_banner_img_url = Column(String(300), nullable = True)
     # member = relationship("HoloMember", backref="holo_member_channel")
 
     def __repr__(self):
-        return "<HoloMemberCh(channel_id='%s', channel_name='%s', member_name='%s', channel_url='%s')>" % (
+        return "<HoloMemberCh(channel_id='%s', channel_name='%s', member_name='%s', channel_url='%s', channel_profile_img_url='%s', channel_banner_img_url='%s')>" % (
             self.channel_id,
             self.channel_name,
             self.member_name,
             self.channel_url,
+            self.channel_profile_img_url,
+            self.channel_banner_img_url,
         )
 
     @classmethod
@@ -37,6 +41,6 @@ class HoloMemberCh(Base):
     def get_ids(cls, session, company):
         return session.query(HoloMemberCh.channel_id).filter(HoloMemberCh.company_name == company).all()
 
-    FIELDS = {"channel_id": str, "channel_name": str, "member_name": str, "company_name": str, "channel_url": str}
+    FIELDS = {"channel_id": str, "channel_name": str, "member_name": str, "company_name": str, "channel_url": str, "channel_profile_img_url": str, "channel_banner_img_url": str}
 
     FIELDS.update(Base.FIELDS)

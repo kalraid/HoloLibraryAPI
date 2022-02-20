@@ -1,35 +1,19 @@
-import asyncio
-
-import websockets
-from requests.exceptions import ChunkedEncodingError
-from twitter import TwitterError
-from websockets.exceptions import ConnectionClosed
-
-import log
-
+import time
 import traceback
 
-from app.database import get_session
-from app.model import HoloMemberTwitterHashtag, HoloTwitterDraw, HoloMemberHashtag, HoloTwitterDrawHashtag, \
-    HoloTwitterCustomDraw, HoloTwitterCustomDrawHashtag
-import threading
-
-import time
-import sched
-
-twitter_consumer_key = "LyJRYgDOXyXgkEwVfCzZdvYZx"
-twitter_consumer_secret = "GJqGw39xTKs63CQB84vvxuhAnLifVPIkeYHehNH7pypGwGqjoq"
-# twitter_access_token = "AAAAAAAAAAAAAAAAAAAAAHsjTgEAAAAAWiB8zHi6GLqE1aF%2F4yNtd8kMqnQ%3DXBQE9cq3pSVn0PrT9ln4vmLyqsGNeuTAuril09anUvI1qifuUg"
-twitter_access_token = "1433414457179312128-Rk4M7AhwcoOS5l4vGLHpGhZPU5RT6Y"
-twitter_access_secret = "MOsBpp5QYq8lhwZXGdXsDNTrSftcAod7kAoPSRVC5f5hh"
 import twitter
+from requests.exceptions import ChunkedEncodingError
+from twitter import TwitterError
 
-twitter_api = twitter.Api(consumer_key=twitter_consumer_key,
-                          consumer_secret=twitter_consumer_secret,
-                          access_token_key=twitter_access_token,
-                          access_token_secret=twitter_access_secret)
+import log
+from app.const import CONST
+from app.database import get_session
+from app.model import HoloMemberTwitterHashtag, HoloMemberHashtag, HoloTwitterCustomDraw, HoloTwitterCustomDrawHashtag
 
-import json
+twitter_api = twitter.Api(consumer_key=CONST.TWITTER_CONSUMER_KEY,
+                          consumer_secret=CONST.TWITTER_CONSUMER_SECRET,
+                          access_token_key=CONST.TWITTER_ACCESS_TOKEN,
+                          access_token_secret=CONST.TWITTER_ACCESS_SECRET)
 
 account = ["8803178971249188864", "1433414457179312128"]
 output_file_name = "../../../../tests/stream_tag_result.txt"
@@ -43,7 +27,8 @@ def getHashTags():
     global stream
     tags = []
     try:
-        hashTags = HoloMemberTwitterHashtag().get_group_by_hashtag_two_month(db_session)
+        hashTags = HoloMemberTwitterHashtag().get_group_by_hashtag_two_month(
+            db_session)  # member twitter tag - base tag
         base_tags = HoloMemberHashtag().get_group_by_hashtag(db_session)
         for i in hashTags:
             if i not in base_tags:
@@ -84,15 +69,16 @@ def twitter_custom_tag_run():
                             if entities is not None and "hashtags" in entities and entities["hashtags"]:
                                 # holoMemberTweet.hashtags = list(set(map(lambda i: i["text"], entities["hashtags"])))
                                 for i in entities["hashtags"]:
-                                    holoTwitterDrawHashtag = HoloTwitterCustomDrawHashtag()
-                                    holoTwitterDrawHashtag.hashtag = "#" + i["text"]
-                                    holoTwitterDrawHashtag.datatype = "image"
-                                    holoTwitterDrawHashtag.tagtype = "image"
+                                    if i in tags:
+                                        holoTwitterDrawHashtag = HoloTwitterCustomDrawHashtag()
+                                        holoTwitterDrawHashtag.hashtag = "#" + i["text"]
+                                        holoTwitterDrawHashtag.datatype = "image"
+                                        holoTwitterDrawHashtag.tagtype = "image"
 
-                                    if i in ban_tags:
-                                        holoTwitterDrawHashtag.isUse = "N"
+                                        if i in ban_tags:
+                                            holoTwitterDrawHashtag.isUse = "N"
 
-                                    hashtags.append(holoTwitterDrawHashtag)
+                                        hashtags.append(holoTwitterDrawHashtag)
 
                             if "media" in entities and entities["media"]:
                                 media = []

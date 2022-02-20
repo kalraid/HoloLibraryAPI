@@ -8,6 +8,8 @@ import log
 from app.model import Base
 
 LOG = log.get_logger()
+
+
 class HoloMemberTwitterInfo(Base):
     __tablename__ = 'holo_member_twitter_info'
 
@@ -18,14 +20,18 @@ class HoloMemberTwitterInfo(Base):
     twitter_username = Column(String(200), nullable=False)
     twitter_name = Column(String(500), nullable=False)
     twitter_url = Column(String(200), nullable=False)
+    twitter_proto = Column(String(100), nullable=False)
+    twitter_header_photo = Column(String(100), nullable=False)
 
     def __repr__(self):
-        return "<HoloMemberTwitterInfo(index='%s', twitter_username='%s', twitter_name='%s', twitter_id='%s', twitter_url='%s')>" % (
+        return "<HoloMemberTwitterInfo(index='%s', twitter_username='%s', twitter_name='%s', twitter_id='%s', twitter_url='%s', twitter_proto='%s', twitter_header_photo='%s')>" % (
             self.index,
             self.twitter_username,
             self.twitter_name,
             self.twitter_id,
             self.twitter_url,
+            self.twitter_proto,
+            self.twitter_header_photo,
         )
 
     @classmethod
@@ -42,6 +48,7 @@ class HoloMemberTwitterInfo(Base):
         LOG.info("len list : {}".format(len(twitter_info_list)))
         return list(map(lambda i: i[0].strip(), twitter_info_list))
 
-    FIELDS = {"index": str, "twitter_username": str, "twitter_name": str, "twitter_id": str, "twitter_url": str}
+    FIELDS = {"index": str, "twitter_username": str, "twitter_name": str, "twitter_id": str, "twitter_url": str,
+              "twitter_proto": str, "twitter_header_photo": str}
 
     FIELDS.update(Base.FIELDS)
