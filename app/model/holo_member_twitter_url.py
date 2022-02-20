@@ -26,6 +26,6 @@ class HoloMemberTwitterUrl(Base):
     def get_id(cls):
         return HoloMemberTwitterUrl.index
 
-    FIELDS = {"url": String}
+    FIELDS = {"url": str}
 
     FIELDS.update(Base.FIELDS)

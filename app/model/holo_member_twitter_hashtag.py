@@ -60,6 +60,6 @@ class HoloMemberTwitterHashtag(Base):
         LOG.info("len list : {}".format(len(hashtags)))
         return list(map(lambda i: i[0].strip(), hashtags))
 
-    FIELDS = {"hashtag": String, "datatype": String, "tagtype": String}
+    FIELDS = {"hashtag": str, "datatype": str, "tagtype": str}
 
     FIELDS.update(Base.FIELDS)

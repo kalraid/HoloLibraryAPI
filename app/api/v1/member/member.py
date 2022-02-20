@@ -19,7 +19,7 @@ from app.errors import (
 )
 from app.utils import alchemy
 from app.model import User, UserStaticYoutube, HoloMemberCh, HoloMember, HoloMemberHashtag, HoloMemberTweet, \
-    HoloMemberTwitterInfo
+    HoloMemberTwitterInfo, HoloMemberImage
 from app.utils.auth import verify_password
 from app.utils.hooks import auth_required
 
@@ -100,34 +100,59 @@ class List(BaseResource):
         filters = {}
         if 'index' in params and params['index']:
             member_index = params['index']
-            member_dbs = session.query(HoloMember).filter(HoloMember.index == member_index).first()
+            member_dbs = session.query(HoloMember, HoloMemberImage.img_url).join(HoloMemberImage,
+                                                                                 HoloMemberImage.member_id == HoloMember.index).filter(
+                HoloMemberImage.img_type == 'small').filter(HoloMember.index == member_index).first()
             filters['member_index'] = member_index
 
         elif 'member_id' in params and params['member_id']:
             member_id = params['member_id']
-            member_dbs = session.query(HoloMember).filter(HoloMember.index == member_id).first()
+            member_dbs = session.query(HoloMember, HoloMemberImage.img_url).join(HoloMemberImage,
+                                                                                 HoloMemberImage.member_id == HoloMember.index).filter(
+                HoloMemberImage.img_type == 'small').filter(HoloMember.index == member_id).first()
             filters['member_index'] = member_id
 
         elif 'member_name_kor' in params and params['member_name_kor']:
             member_name_kor = params['member_name_kor']
-            member_dbs = session.query(HoloMember).filter(HoloMember.member_name_kor == member_name_kor).first()
+            member_dbs = session.query(HoloMember, HoloMemberImage.img_url).join(HoloMemberImage,
+                                                                                 HoloMemberImage.member_id == HoloMember.index).filter(
+                HoloMemberImage.img_type == 'small').filter(HoloMember.member_name_kor == member_name_kor).first()
             filters['member_name_kor'] = member_name_kor
 
         elif 'member_name_eng' in params and params['member_name_eng']:
             member_name_eng = params['member_name_eng']
-            member_dbs = session.query(HoloMember).filter(HoloMember.member_name_eng == member_name_eng).first()
+            member_dbs = session.query(HoloMember, HoloMemberImage.img_url).join(HoloMemberImage,
+                                                                                 HoloMemberImage.member_id == HoloMember.index).filter(
+                HoloMemberImage.img_type == 'small').filter(HoloMember.member_name_eng == member_name_eng).first()
             filters['member_name_eng'] = member_name_eng
 
         elif 'member_name' in params and params['member_name']:
             member_name = params['member_name']
-            member_dbs = session.query(HoloMember).filter(HoloMember.member_name_eng == member_name).first()
+            member_dbs = session.query(HoloMember, HoloMemberImage.img_url).join(HoloMemberImage,
+                                                                                 HoloMemberImage.member_id == HoloMember.index).filter(
+                HoloMemberImage.img_type == 'small').filter(HoloMember.member_name_eng == member_name).first()
             filters['member_name_eng'] = member_name
         else:
-            member_dbs = session.query(HoloMember).all()
+            member_dbs = session.query(HoloMember, HoloMemberImage.img_url).join(HoloMemberImage,
+                                                                                 HoloMemberImage.member_id == HoloMember.index).filter(
+                HoloMemberImage.img_type == 'small').all()
 
-        data = alchemy.db_result_to_dict_list(member_dbs)
+        # data = alchemy.db_result_to_dict_list(member_dbs)
+        list = []
+        if type(list) == type(member_dbs) and len(member_dbs) > 1:
+            for i in member_dbs:
+                temp = i[0].to_dict()
+                temp['img_url'] = i[1]
 
-        obj = {'len': len(data), 'filters': filters, 'member_list': data}
+                list.append(temp)
+        else:
+            if member_dbs is not None and len(member_dbs) != 0:
+                temp = member_dbs[0].to_dict()
+                temp['img_url'] = member_dbs[1]
+
+                list.append(temp)
+
+        obj = {'len': len(list), 'filters': filters, 'member_list': list}
         self.on_success(res, obj)
 
 
@@ -227,8 +252,8 @@ class TweetLive(BaseResource):
         if type(list) == type(tweet_dbs) and len(tweet_dbs) > 1:
             for i in tweet_dbs:
                 temp = i[0].to_dict()
-                if temp.rt_tweet_id is not None:
-                    temp.tweet_id = temp.rt_tweet_id
+                if temp['rt_tweet_id'] is not None:
+                    temp['tweet_id'] = temp['rt_tweet_id']
                 temp['member_id'] = i[1]
 
                 list.append(temp)
@@ -313,3 +338,29 @@ class TweetLive(BaseResource):
                 # The default media deserializer uses the json standard
                 #   library, so you might see this error raised as well.
                 pass
+
+
+class Customes(BaseResource):
+    """
+    Handle for endpoint: /v1/member/customes
+    """
+
+    async def on_get(self, req, res):
+        session = req.context["session"]
+        params = req.params
+
+        filters = {}
+        if 'member_id' in params and params['member_id']:
+            member_id = params['member_id']
+            customes = session.query(HoloMemberImage) \
+                .filter(HoloMemberImage.img_type == 'large') \
+                .filter(HoloMemberImage.member_id == member_id).all()
+
+            filters['member_id'] = member_id
+        else:
+            customes = session.query(HoloMemberImage) \
+                .filter(HoloMemberImage.img_type == 'large').all()
+        data = alchemy.db_result_to_dict_list(customes)
+
+        obj = {'len': len(data), 'filters': filters, 'customes_list': data}
+        self.on_success(res, obj)

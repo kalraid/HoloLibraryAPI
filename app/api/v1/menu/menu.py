@@ -9,7 +9,7 @@ try:
 except ImportError:
     OrderedDict = dict
 
-from app.api.v1.static.thread.analysis import AnalysisSubscribeThread
+from app.api.v1.statistics.thread.analysis import AnalysisSubscribeThread
 
 LOG = log.get_logger()
 

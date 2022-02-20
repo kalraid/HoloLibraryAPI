@@ -3,6 +3,7 @@
 from .base import Base
 from .holo_company import HoloCompany
 from .holo_member import HoloMember
+from .holo_member_image import HoloMemberImage
 from .holo_member_ch import HoloMemberCh
 from .holo_member_stream import HoloMemberStream
 from .holo_member_stream_reply import HoloMemberStreamReply
@@ -17,6 +18,6 @@ from .holo_twitter_draw_hashtag import HoloTwitterDrawHashtag
 from .holo_twitter_custom_draw import HoloTwitterCustomDraw
 from .holo_twitter_custom_draw_hashtag import HoloTwitterCustomDrawHashtag
 from .holo_member_twitter_info import HoloMemberTwitterInfo
-from .holo_twitter_draw_hist import HoloTwitterDrawHist
+from .draw_statistics import DrawStatistics
 from .user import User
 from .user_static_youbute import UserStaticYoutube

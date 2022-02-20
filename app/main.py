@@ -10,7 +10,7 @@ from app.api.common import base
 from app.api.v1.twitter import tweet
 from app.api.v1.auth import login
 from app.api.v1.menu import menu
-from app.api.v1.static import youtube
+from app.api.v1.statistics import youtube, image
 from app.api.v1.user import users
 from app.api.v1.member import member
 from app.database import db_session, init_session
@@ -30,6 +30,8 @@ class App(falcon.asgi.App):
         self.add_route("/", base.BaseResource())
         self.add_route("/v1/login", login.Auth())
 
+        self.add_route("/v1/statistics/count/image", image.Count())
+
         self.add_route("/v1/menu/list", menu.Menu())
 
         self.add_route("/v1/users", users.Collection())
@@ -37,11 +39,13 @@ class App(falcon.asgi.App):
         self.add_route("/v1/users/self/login", users.Self())
 
         self.add_route("/v1/member/list", member.List())
+        self.add_route("/v1/member/customes", member.Customes())
         self.add_route("/v1/member/tags", member.Tags())
         self.add_route("/v1/member/tweets", member.Tweets())
         self.add_route("/v1/member/tweet/live", member.TweetLive())
         self.add_route("/v1/member/youtube/channel/list", member.Collection())
 
+        self.add_route("/v1/twitter", tweet.TwitterList())
         self.add_route("/v1/tweet/draws", tweet.Draws())
         self.add_route("/v1/tweet/draws/live", tweet.DrawsLive())
 

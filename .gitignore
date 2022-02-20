@@ -259,7 +259,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# pytype static type analyzer
+# pytype statistics type analyzer
 .pytype/
 
 # Cython debug symbols
@@ -292,3 +292,4 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/python,windows,macos,pycharm+all
+/app/config/

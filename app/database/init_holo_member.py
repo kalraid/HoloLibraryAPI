@@ -12,8 +12,6 @@ def get_member_data(db_session):
     df = get_init_datasheet(sheet_name)
     LOG.debug(' init data - get_member_data datashhet ok ')
 
-    LOG.info(656565)
-
     for index, data_row in df.iterrows():
         holoMember = HoloMember()
 

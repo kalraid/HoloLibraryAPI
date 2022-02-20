@@ -18,7 +18,8 @@ class HoloTwitterDraw(Base):
     twitter_user_id = Column(String(50), nullable=False)
 
     def __repr__(self):
-        return "<HoloTwitterDraw(twitter_id='%s', url='%s',twitter_user_nm='%s',twitter_user_id='%s')>" % (
+        return "<HoloTwitterDraw(index='%s', twitter_id='%s', url='%s',twitter_user_nm='%s',twitter_user_id='%s')>" % (
+            self.index,
             self.twitter_id,
             self.url,
             self.twitter_user_nm,
@@ -29,6 +30,6 @@ class HoloTwitterDraw(Base):
     def get_id(cls):
         return HoloTwitterDraw.index
 
-    FIELDS = {"twitter_id": str, "url": str, "twitter_user_nm": str, "twitter_user_id": str}
+    FIELDS = {"index": int, "twitter_id": str, "url": str, "twitter_user_nm": str, "twitter_user_id": str}
 
     FIELDS.update(Base.FIELDS)
