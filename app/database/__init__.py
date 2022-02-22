@@ -33,7 +33,6 @@ engine = get_engine(config.DATABASE_URL)
 
 
 def get_session():
-    init_session()
     return db_session
 
 
@@ -46,7 +45,7 @@ def init_session():
 
 def __init_table__():
 
-    drop_all(engine)
+    #drop_all(engine)
     create_all(engine)
 
 

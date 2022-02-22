@@ -42,3 +42,15 @@ def datetime_to_timestamp(date):
         return int(time.mktime(date.timetuple()))
     else:
         return None
+
+def db_result_to_dict_list(data):
+    list = []
+    if type(data) == type(list):
+        for i in data:  # convert list[objects] to list[dict]
+            temp = i.to_dict()
+            list.append(temp)
+    else:
+        if data is not None:
+            list.append(data.to_dict())
+
+    return list

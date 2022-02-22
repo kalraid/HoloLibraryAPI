@@ -18,7 +18,9 @@ class HoloMember(Base):
     member_name_jp = Column(String(80), nullable=False, primary_key=True)
 
     def __repr__(self):
-        return "<HoloMember(company_name_alias='%s', member_classification='%s', member_generation='%s', member_name_kor='%s', member_name_eng='%s', member_name_jp='%s')>" % (
+        return "<HoloMember(index='%s',member_id='%s', company_name_alias='%s', member_classification='%s', member_generation='%s', member_name_kor='%s', member_name_eng='%s', member_name_jp='%s')>" % (
+            self.index,
+            self.index,
             self.company_name_alias,
             self.member_classification,
             self.member_generation,
@@ -39,7 +41,7 @@ class HoloMember(Base):
     def finds_by_company(cls, session, company_name_alias):
         return session.query(HoloMember).filter(HoloMember.company_name_alias == company_name_alias).all()
 
-    FIELDS = {"company_name_alias": str, "member_classification": str, "member_generation": str, "member_name_kor": str,
+    FIELDS = {"index": int, "member_id": int,  "company_name_alias": str, "member_classification": str, "member_generation": str, "member_name_kor": str,
               "member_name_eng": str, "member_name_jp": str}
 
     FIELDS.update(Base.FIELDS)

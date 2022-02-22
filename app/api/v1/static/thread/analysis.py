@@ -82,6 +82,9 @@ class AnalysisSubscribeThread(threading.Thread):
                 if title.find("Ch") > -1:
                     user_static_youtube.member_name = title[0: int(title.index("Ch")) - 1]
 
+                if title.find("ch") > -1:
+                    user_static_youtube.member_name = title[0: int(title.index("ch")) - 1]
+
                 elif title.find("Channel") > -1:
                     user_static_youtube.member_name = title[0: int(title.index("Channel")) - 1]
 

@@ -9,7 +9,7 @@ LOG = log.get_logger()
 
 
 class AuthHandler(object):
-    def process_request(self, req, res, resource=None):
+    async def process_request(self, req, res, resource=None):
         LOG.debug("Authorization: %s", req.auth)
         if req.auth is not None:
             token = decrypt_token(req.auth)

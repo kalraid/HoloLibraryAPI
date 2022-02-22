@@ -21,8 +21,9 @@ class Menu(BaseResource):
     """
     Handle for endpoint: /v1/menu
     """
+
     ## this list is menu name list
-    def on_get(self, req, res):
+    async def on_get(self, req, res):
         data = [
             {
                 'menu_name': '테이블',
@@ -80,22 +81,22 @@ class Menu(BaseResource):
                 'role': 'user'
             },
             {
-                'menu_name': '홀로라이브 정보 모아보기',
+                'menu_name': '홀로 멤버 정보',
                 'menu_id': 'M20100',
                 'role': 'user'
             },
             {
-                'menu_name': '멤버 목록',
+                'menu_name': '홀로 멤버 목록',
                 'menu_id': 'M20101',
                 'role': 'user'
             },
             {
-                'menu_name': '멤버 유투브 커뮤니티',
+                'menu_name': '홀로 멤버 유투브',
                 'menu_id': 'M20102',
                 'role': 'user'
             },
             {
-                'menu_name': '멤버 트위터',
+                'menu_name': '홀로 멤버 트위터',
                 'menu_id': 'M20103',
                 'role': 'user'
             },
@@ -115,16 +116,70 @@ class Menu(BaseResource):
                 'role': 'user'
             },
             {
-                'menu_name': '트위터 보관소',
-                'menu_id': 'M20203',
-                'role': 'user'
-            },
-            {
                 'menu_name': '키리누키 명함판',
                 'menu_id': 'M20204',
                 'role': 'user'
             },
-
+            {
+                'menu_name': '트윗 이미지 보관소',
+                'menu_id': 'M20300',
+                'role': 'user'
+            },
+            {
+                'menu_name': '팬 아트',  # fanart
+                'menu_id': 'M20301',
+                'role': 'user'
+            },
+            {
+                'menu_name': '밈 아트',  # meme
+                'menu_id': 'M20302',
+                'role': 'user'
+            },
+            {
+                'menu_name': '방송 관련',  # kirinuki, stream
+                'menu_id': 'M20303',
+                'role': 'user'
+            },
+            {
+                'menu_name': '이벤트',  # custom live tags
+                'menu_id': 'M20304',
+                'role': 'user'
+            },
+            {
+                'menu_name': '전체',  # base + custom live tags all
+                'menu_id': 'M20305',
+                'role': 'user'
+            },
+            {
+                'menu_name': '트윗 모음',
+                'menu_id': 'M20400',
+                'role': 'user'
+            },
+            {
+                'menu_name': '최신 트윗',
+                'menu_id': 'M20401',
+                'role': 'user'
+            },
+            {
+                'menu_name': '타임 라인 트윗',
+                'menu_id': 'M20402',
+                'role': 'user'
+            },
+            {
+                'menu_name': '리트윗 모음',
+                'menu_id': 'M20403',
+                'role': 'user'
+            },
+            {
+                'menu_name': '기본 태그 트윗',
+                'menu_id': 'M20404',
+                'role': 'user'
+            },
+            {
+                'menu_name': '일회성 태그 트윗',
+                'menu_id': 'M20405',
+                'role': 'user'
+            }
         ]
 
         response = {'data': data}

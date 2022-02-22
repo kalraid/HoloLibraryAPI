@@ -69,7 +69,7 @@ class AppError(Exception):
         return self.error["description"]
 
     @staticmethod
-    def handle(exception, req, res, error=None):
+    async def handle(exception, req, res, error=None):
         res.status = exception.status
         meta = OrderedDict()
         meta["code"] = exception.code

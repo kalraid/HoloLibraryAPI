@@ -18,16 +18,17 @@ class HoloMemberHashtag(Base):
 
     hashtag = Column(String(500), nullable=False)
     datatype = Column(String(30), nullable=False) # init, tweet, img
-    type = Column(String(30), nullable=False) # base, fanart, stream
+    tagtype = Column(String(30), nullable=False) # base, fanart, stream
 
     member_id = Column(Integer, ForeignKey('holo_member.index'), nullable=True)
     member = relationship("HoloMember", backref="holo_member_hashtag")
 
     def __repr__(self):
-        return "<holo_member_hashtag(hashtag='%s',datatype='%s',type='%s')>" % (
+        return "<holo_member_hashtag(hashtag='%s',datatype='%s',type='%s', member_id='%s')>" % (
             self.hashtag,
             self.datatype,
-            self.type
+            self.type,
+            self.member_id
         )
 
     @classmethod
@@ -49,6 +50,6 @@ class HoloMemberHashtag(Base):
 
 
 
-    FIELDS = {"hashtag": String, "datatype": String, "type": String}
+    FIELDS = {"hashtag": str, "datatype": str, "type": str , 'member_id' : str}
 
     FIELDS.update(Base.FIELDS)
