@@ -4,6 +4,8 @@ from datetime import datetime
 import traceback
 import time
 
+from app.config import BACK_SERVER_URL
+
 import websockets, asyncio, threading
 from twitter import TwitterError
 from websockets.exceptions import ConnectionClosed
@@ -88,7 +90,7 @@ async def init_websocket():
     LOG.info("twitter_run init_websocket start ")
     while True:
         try:
-            async with websockets.connect("ws://localhost:8000/v1/member/tweet/live", subprotocols=["live_tweet"],
+            async with websockets.connect("ws://"+BACK_SERVER_URL+":8000/v1/member/tweet/live", subprotocols=["live_tweet"],
                                           ping_interval=10, ping_timeout=60 * 60) as ws:
                 LOG.info("twitter_custom_tag_run websocket standing ")
                 while True:

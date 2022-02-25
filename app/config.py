@@ -13,7 +13,7 @@ TOKEN_EXPIRES = 3600
 APP_ENV = os.environ.get("APP_ENV") or "local"  # or 'live' to load live
 path = os.path.realpath('__file__')
 if 'batch' in path:
-    path = path.replace('\\batch','')
+    path = path.replace('\\batch', '')
 
 INI_FILE = os.path.join(
     os.path.dirname(path), "config/{}.ini".format(APP_ENV)
@@ -38,3 +38,5 @@ DB_ECHO = True if CONFIG["database"]["echo"] == "yes" else False
 DB_AUTOCOMMIT = True
 logging.error(CONFIG["logging"]["level"])
 LOG_LEVEL = CONFIG["logging"]["level"]
+
+BACK_SERVER_URL = CONFIG["servers"]["backend_url"]

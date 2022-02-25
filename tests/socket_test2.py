@@ -8,6 +8,7 @@ from websockets.exceptions import ConnectionClosed
 
 import json
 import log
+from app.config import BACK_SERVER_URL
 
 LOG = log.get_logger()
 
@@ -27,7 +28,7 @@ async def hello():
 
     while True:
         try:
-            async with websockets.connect("ws://localhost:8000/v1/member/tweet/live", subprotocols=["live_tweet"],
+            async with websockets.connect("ws://"+BACK_SERVER_URL+":8000/v1/member/tweet/live", subprotocols=["live_tweet"],
                                           ping_interval=10, ping_timeout=60 * 60) as ws:
                 LOG.info("twitter_custom_tag_run websocket standing ")
                 time.sleep(30)
