@@ -2,7 +2,6 @@
 import falcon
 import sqlalchemy.orm.scoping as scoping
 from sqlalchemy.exc import SQLAlchemyError
-from app import config
 
 import log
 from app import config

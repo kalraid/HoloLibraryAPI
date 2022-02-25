@@ -2,8 +2,8 @@
 # pytest
 # -----------------------------------------------------------------
 
-from falcon import testing
 import pytest
+from falcon import testing
 
 import app.main as app
 

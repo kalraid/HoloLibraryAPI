@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import falcon
-from sqlalchemy.orm.exc import NoResultFound
 
 import log
 from app.api.common import BaseResource
@@ -8,7 +7,6 @@ from app.errors import (
     InvalidParameterError,
 )
 from app.model import User, UserStaticYoutube
-from app.utils.auth import uuid
 
 try:
     from collections import OrderedDict

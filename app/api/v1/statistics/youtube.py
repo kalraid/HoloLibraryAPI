@@ -1,21 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import re
-
-import falcon
-import requests
-from sqlalchemy.orm.exc import NoResultFound
-
 import log
 from app.api.common import BaseResource
 from app.errors import (
     AppError,
-    UserNotExistsError,
-    PasswordNotMatch,
 )
-from app.model import User, UserStaticYoutube
-from app.utils.auth import verify_password
-from app.utils.hooks import auth_required
+from app.model import UserStaticYoutube
 
 LOG = log.get_logger()
 

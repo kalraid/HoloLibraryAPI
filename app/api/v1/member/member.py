@@ -1,27 +1,15 @@
 # -*- coding: utf-8 -*-
 
-import re
+import json
 
-import falcon
-import requests
 from falcon.asgi import Request, WebSocket
-from falcon.constants import WebSocketPayloadType
 from falcon.errors import WebSocketDisconnected
-from sqlalchemy.orm.exc import NoResultFound
-from collections import defaultdict
 
-import log, json
+import log
 from app.api.common import BaseResource
-from app.errors import (
-    AppError,
-    UserNotExistsError,
-    PasswordNotMatch,
-)
-from app.utils import alchemy
-from app.model import User, UserStaticYoutube, HoloMemberCh, HoloMember, HoloMemberHashtag, HoloMemberTweet, \
+from app.model import UserStaticYoutube, HoloMemberCh, HoloMember, HoloMemberHashtag, HoloMemberTweet, \
     HoloMemberTwitterInfo, HoloMemberImage
-from app.utils.auth import verify_password
-from app.utils.hooks import auth_required
+from app.utils import alchemy
 
 LOG = log.get_logger()
 

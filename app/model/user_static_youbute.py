@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import Column
-from sqlalchemy import String, Integer, DATE
+from sqlalchemy import String, DATE
 
 from app.model import Base
 

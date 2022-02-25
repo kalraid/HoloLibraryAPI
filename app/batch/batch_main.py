@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
     import uvicorn
 
-    uvicorn.run(application, host="127.0.0.1", port=8010, log_level="info")
+    uvicorn.run(application, host="0.0.0.0", port=8000, log_level="info")
 
 if __name__ == '__exit__':
     LOG.info('Threading all stop -- start')

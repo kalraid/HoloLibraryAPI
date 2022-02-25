@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from sqlalchemy import Column, ForeignKey
-from sqlalchemy import String, Integer, DATE
-from sqlalchemy.dialects.mysql import JSON
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column
+from sqlalchemy import String
 
 from app.model import Base
-from app.utils import alchemy
 
 
 class HoloTwitterDraw(Base):

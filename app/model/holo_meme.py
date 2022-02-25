@@ -2,11 +2,9 @@
 
 from sqlalchemy import Column
 from sqlalchemy import String, ARRAY
-from sqlalchemy.dialects.mysql import JSON
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
 
 from app.model import Base
-from app.utils import alchemy
 
 
 class HoloMeme(Base):

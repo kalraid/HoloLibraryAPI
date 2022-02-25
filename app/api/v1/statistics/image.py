@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
+import json
+
 from falcon.asgi import Request, WebSocket
 from falcon.errors import WebSocketDisconnected
 
-import log, json
+import log
 from app.api.common import BaseResource
-from app.model import DrawStatistics
 from app.database import get_session
-
+from app.model import DrawStatistics
 
 LOG = log.get_logger()
 db_session = get_session()

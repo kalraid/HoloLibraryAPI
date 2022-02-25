@@ -1,5 +1,5 @@
 import pandas as pd
-import requests
+
 import log
 
 LOG = log.get_logger()

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import falcon
 from app.errors import UnauthorizedError
 
 

@@ -6,7 +6,8 @@ import time
 import websockets
 from websockets.exceptions import ConnectionClosed
 
-import log, json
+import json
+import log
 
 LOG = log.get_logger()
 

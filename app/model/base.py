@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from sqlalchemy import Column, Table, PrimaryKeyConstraint, DateTime, func, String, Integer, Sequence
+from sqlalchemy import Column, Table, PrimaryKeyConstraint, DateTime, func, String, Integer
 from sqlalchemy.ext.declarative import as_declarative
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 

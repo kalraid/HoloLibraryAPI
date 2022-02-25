@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import datetime
 import json
 import time
-import datetime
 
 from sqlalchemy.ext.declarative import DeclarativeMeta
 

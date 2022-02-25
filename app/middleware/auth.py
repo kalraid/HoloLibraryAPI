@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import log
-from app.utils.auth import decrypt_token
 from app.errors import UnauthorizedError
-
+from app.utils.auth import decrypt_token
 
 LOG = log.get_logger()
 

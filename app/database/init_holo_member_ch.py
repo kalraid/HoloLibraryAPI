@@ -1,11 +1,10 @@
 import array
-import json
+
+import requests
 
 import log
 from app.model.holo_member_ch import HoloMemberCh
 from app.module.google_api.drive import get_init_datasheet
-import requests
-from bs4 import BeautifulSoup
 
 LOG = log.get_logger()
 

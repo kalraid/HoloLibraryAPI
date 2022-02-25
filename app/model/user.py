@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-from builtins import print
 
 from sqlalchemy import Column
-from sqlalchemy import String, Integer
+from sqlalchemy import String
 
-from app.config import UUID_LEN
 from app.model import Base
 
 

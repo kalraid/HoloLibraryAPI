@@ -2,14 +2,11 @@
 from datetime import datetime, timedelta
 
 from sqlalchemy import Column, ForeignKey
-from sqlalchemy import String, Integer, DATE
-from sqlalchemy.dialects.mysql import JSON
+from sqlalchemy import String
 from sqlalchemy.orm import relationship
 
-from app.model import Base
-from app.utils import alchemy
-
 import log
+from app.model import Base
 
 LOG = log.get_logger()
 

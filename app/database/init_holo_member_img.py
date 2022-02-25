@@ -1,5 +1,3 @@
-import copy
-
 import log
 from app.model.holo_member import HoloMember
 from app.model.holo_member_image import HoloMemberImage
