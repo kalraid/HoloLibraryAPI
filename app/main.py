@@ -1,23 +1,18 @@
 # -*- coding: utf-8 -*-
-import json
 
 import falcon.asgi
-from falcon_swagger_ui.resources import SwaggerUiResource
-from uvicorn import Config
 
 import log
 from app.api.common import base
-from app.api.v1.twitter import tweet
 from app.api.v1.auth import login
-from app.api.v1.menu import menu
-from app.api.v1.statistics import youtube, image
-from app.api.v1.user import users
 from app.api.v1.member import member
+from app.api.v1.menu import menu
+from app.api.v1.statistics import image
+from app.api.v1.twitter import tweet
+from app.api.v1.user import users
 from app.database import db_session, init_session
 from app.errors import AppError
 from app.middleware import AuthHandler, JSONTranslator, DatabaseSessionManager, CORSMiddleware, WebsocketHandler
-import pathlib
-from falcon_swagger_ui import register_swaggerui_app, StaticSinkAdapter
 
 LOG = log.get_logger()
 
