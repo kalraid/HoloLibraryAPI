@@ -3,7 +3,7 @@ import log
 LOG = log.get_logger()
 
 ALLOWED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000', 'http://localhost:9528',
-                   'http://127.0.0.1:9528','http://localhost:9528/']  # Or load this from a config file
+                   'http://127.0.0.1:9528','http://localhost:9528/', 'http://152.69.226.2:9528']  # Or load this from a config file
 
 
 class CORSMiddleware(object):
