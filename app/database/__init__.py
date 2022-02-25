@@ -39,8 +39,8 @@ def get_session():
 def init_session():
     db_session.configure(bind=engine)
 
-    #__init_table__()
-    #__init_data__()
+    __init_table__()
+    __init_data__()
 
 
 def __init_table__():
