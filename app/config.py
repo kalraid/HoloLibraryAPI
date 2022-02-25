@@ -11,8 +11,12 @@ UUID_ALPHABET = "".join(map(chr, range(48, 58)))
 TOKEN_EXPIRES = 3600
 
 APP_ENV = os.environ.get("APP_ENV") or "local"  # or 'live' to load live
+path = os.path.realpath('__file__')
+if 'batch' in path:
+    path = path.replace('\\batch','')
+
 INI_FILE = os.path.join(
-    os.path.dirname(os.path.realpath('__file__')), "config/{}.ini".format(APP_ENV)
+    os.path.dirname(path), "config/{}.ini".format(APP_ENV)
 )
 
 CONFIG = configparser.ConfigParser(interpolation=None)
