@@ -88,42 +88,47 @@ class List(BaseResource):
         filters = {}
         if 'index' in params and params['index']:
             member_index = params['index']
-            member_dbs = session.query(HoloMember, HoloMemberImage.img_url).join(HoloMemberImage,
-                                                                                 HoloMemberImage.member_id == HoloMember.index).filter(
-                HoloMemberImage.img_type == 'small').filter(HoloMember.index == member_index).first()
+            member_dbs = session.query(HoloMember, HoloMemberImage.img_url) \
+                .join(HoloMemberImage,HoloMemberImage.member_id == HoloMember.index). \
+                filter(HoloMemberImage.img_type == 'small').filter(HoloMember.index == member_index).\
+                filter(HoloMember.isUse == 'Y').first()
             filters['member_index'] = member_index
 
         elif 'member_id' in params and params['member_id']:
             member_id = params['member_id']
-            member_dbs = session.query(HoloMember, HoloMemberImage.img_url).join(HoloMemberImage,
-                                                                                 HoloMemberImage.member_id == HoloMember.index).filter(
-                HoloMemberImage.img_type == 'small').filter(HoloMember.index == member_id).first()
+            member_dbs = session.query(HoloMember, HoloMemberImage.img_url). \
+                join(HoloMemberImage, HoloMemberImage.member_id == HoloMember.index). \
+                filter(HoloMemberImage.img_type == 'small').filter(HoloMember.index == member_id). \
+                filter(HoloMember.isUse == 'Y').first()
             filters['member_index'] = member_id
 
         elif 'member_name_kor' in params and params['member_name_kor']:
             member_name_kor = params['member_name_kor']
             member_dbs = session.query(HoloMember, HoloMemberImage.img_url).join(HoloMemberImage,
                                                                                  HoloMemberImage.member_id == HoloMember.index).filter(
-                HoloMemberImage.img_type == 'small').filter(HoloMember.member_name_kor == member_name_kor).first()
+                HoloMemberImage.img_type == 'small').filter(HoloMember.member_name_kor == member_name_kor). \
+                filter(HoloMember.isUse == 'Y').first()
             filters['member_name_kor'] = member_name_kor
 
         elif 'member_name_eng' in params and params['member_name_eng']:
             member_name_eng = params['member_name_eng']
             member_dbs = session.query(HoloMember, HoloMemberImage.img_url).join(HoloMemberImage,
                                                                                  HoloMemberImage.member_id == HoloMember.index).filter(
-                HoloMemberImage.img_type == 'small').filter(HoloMember.member_name_eng == member_name_eng).first()
+                HoloMemberImage.img_type == 'small').filter(HoloMember.member_name_eng == member_name_eng). \
+                filter(HoloMember.isUse == 'Y').first()
             filters['member_name_eng'] = member_name_eng
 
         elif 'member_name' in params and params['member_name']:
             member_name = params['member_name']
             member_dbs = session.query(HoloMember, HoloMemberImage.img_url).join(HoloMemberImage,
-                                                                                 HoloMemberImage.member_id == HoloMember.index).filter(
-                HoloMemberImage.img_type == 'small').filter(HoloMember.member_name_eng == member_name).first()
+                                                                                 HoloMemberImage.member_id == HoloMember.index). \
+                filter(HoloMemberImage.img_type == 'small').filter(HoloMember.member_name_eng == member_name). \
+                filter(HoloMember.isUse == 'Y').first()
             filters['member_name_eng'] = member_name
         else:
-            member_dbs = session.query(HoloMember, HoloMemberImage.img_url).join(HoloMemberImage,
-                                                                                 HoloMemberImage.member_id == HoloMember.index).filter(
-                HoloMemberImage.img_type == 'small').all()
+            member_dbs = session.query(HoloMember, HoloMemberImage.img_url). \
+                join(HoloMemberImage, HoloMemberImage.member_id == HoloMember.index). \
+                filter(HoloMember.isUse == 'Y').filter(HoloMemberImage.img_type == 'small').all()
 
         # data = alchemy.db_result_to_dict_list(member_dbs)
         list = []

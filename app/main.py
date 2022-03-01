@@ -67,5 +67,4 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(application, host="0.0.0.0", port=8000, log_level="info", ws_ping_interval=10,
-                ws_per_message_deflate=True,
                 ws_ping_timeout=60 * 60, timeout_keep_alive=60 * 5)

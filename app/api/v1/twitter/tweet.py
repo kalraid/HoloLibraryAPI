@@ -12,6 +12,7 @@ from app.utils import alchemy
 
 LOG = log.get_logger()
 
+
 class TwitterList(BaseResource):
     async def on_get(self, req, res):
         session = req.context["session"]
@@ -24,6 +25,7 @@ class TwitterList(BaseResource):
 
         obj = {'len': len(data), 'filters': filters, 'twitter_list': data}
         self.on_success(res, obj)
+
 
 class Draws(BaseResource):
     """
@@ -50,6 +52,7 @@ class Draws(BaseResource):
                     .join(HoloMemberHashtag, HoloMemberHashtag.hashtag == HoloTwitterDrawHashtag.hashtag) \
                     .filter(HoloMemberHashtag.member_id == member_id) \
                     .filter(HoloMemberHashtag.hashtag.in_(hashtags)) \
+                    .filter(HoloTwitterDraw.isUse == 'Y') \
                     .order_by(HoloTwitterDraw.created.desc()).limit(100) \
                     .all()
                 filters['hashtags'] = hashtags
@@ -69,6 +72,7 @@ class Draws(BaseResource):
                     .join(HoloMemberHashtag, HoloMemberHashtag.hashtag == HoloTwitterDrawHashtag.hashtag) \
                     .filter(HoloMemberHashtag.member_id == member_id) \
                     .filter(HoloMemberHashtag.tagtype.in_(type_list)) \
+                    .filter(HoloTwitterDraw.isUse == 'Y') \
                     .order_by(HoloTwitterDraw.created.desc()).limit(12 * 50) \
                     .all()
                 filters['type'] = type_param
@@ -82,6 +86,7 @@ class Draws(BaseResource):
                     .join(HoloTwitterDrawHashtag, HoloTwitterDrawHashtag.holo_twitter_draw_id == HoloTwitterDraw.index) \
                     .join(HoloMemberHashtag, HoloMemberHashtag.hashtag == HoloTwitterDrawHashtag.hashtag) \
                     .filter(HoloMemberHashtag.member_id == member_id) \
+                    .filter(HoloTwitterDraw.isUse == 'Y') \
                     .order_by(HoloTwitterDraw.created.desc()).limit(100) \
                     .all()
 
@@ -94,12 +99,14 @@ class Draws(BaseResource):
                 .join(HoloTwitterDrawHashtag, HoloTwitterDrawHashtag.holo_twitter_draw_id == HoloTwitterDraw.index) \
                 .join(HoloMemberHashtag, HoloMemberHashtag.hashtag == HoloTwitterDrawHashtag.hashtag) \
                 .filter(HoloTwitterDraw.index == draw_index) \
+                .filter(HoloTwitterDraw.isUse == 'Y') \
                 .order_by(HoloTwitterDraw.created.desc()).limit(100) \
                 .all()
 
             filters['draw_index'] = draw_index
         else:
-            draw_dbs = session.query(HoloTwitterDraw).order_by(HoloTwitterDraw.created.desc()).limit(100).all()
+            draw_dbs = session.query(HoloTwitterDraw).filter(HoloTwitterDraw.isUse == 'Y'). \
+                order_by(HoloTwitterDraw.created.desc()).limit(100).all()
 
         # data = alchemy.db_result_to_dict_list(draw_dbs)
         list = []
@@ -153,6 +160,7 @@ class DrawsLive(BaseResource):
                 draw_dbs = session.query(HoloTwitterDraw) \
                     .join(HoloTwitterDrawHashtag) \
                     .join(HoloMemberHashtag, HoloTwitterDrawHashtag.hashtag == HoloMemberHashtag.hashtag) \
+                    .filter(HoloTwitterDraw.isUse == 'Y') \
                     .filter(HoloMemberHashtag.tagtype.in_(tagTypes)).order_by(func.rand()).limit(60 * 60).all()
             elif type == 'recommend':
                 LOG.info(f'recommend type : {type}, tagType : {tagTypes}')
@@ -164,6 +172,7 @@ class DrawsLive(BaseResource):
                     .limit(60 * 60)
 
                 draw_dbs = session.query(HoloTwitterDraw) \
+                    .filter(HoloTwitterDraw.isUse == 'Y') \
                     .join(Ids) \
                     .limit(60 * 60).all()
             else:
@@ -203,11 +212,13 @@ class CustomDraws(BaseResource):
                 .join(HoloMemberTwitterHashtag) \
                 .filter(HoloMemberTwitterHashtag.hashtag.in_(tag_list)) \
                 .filter(HoloMemberTwitterMedia.media_type == 'img') \
+                .filter(HoloMemberTwitterMedia.isUse == 'Y') \
                 .limit(600).all()
 
             third_draws = session.query(HoloTwitterCustomDraw) \
                 .join(HoloTwitterCustomDrawHashtag) \
                 .filter(HoloTwitterCustomDrawHashtag.hashtag.in_(tag_list)) \
+                .filter(HoloTwitterCustomDraw.isUse == 'Y') \
                 .limit(600).all()
 
             filters['hashtags'] = hashtags
@@ -218,10 +229,12 @@ class CustomDraws(BaseResource):
                 .join(HoloMemberTweet) \
                 .join(HoloMemberTwitterHashtag) \
                 .filter(HoloMemberTwitterMedia.media_type == 'img') \
+                .filter(HoloMemberTwitterMedia.isUse == 'Y') \
                 .limit(600).all()
 
             third_draws = session.query(HoloTwitterCustomDraw) \
                 .join(HoloTwitterCustomDrawHashtag) \
+                .filter(HoloTwitterCustomDraw.isUse == 'Y') \
                 .limit(600).all()
 
         list = alchemy.db_result_to_dict_list(second_draws)

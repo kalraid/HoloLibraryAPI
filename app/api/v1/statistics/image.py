@@ -8,10 +8,11 @@ from falcon.errors import WebSocketDisconnected
 import log
 from app.api.common import BaseResource
 from app.database import get_session
-from app.model import DrawStatistics
+from app.model import DrawStatistics, HoloTwitterDraw, HoloTwitterCustomDraw
 
 LOG = log.get_logger()
 db_session = get_session()
+
 
 class Count(BaseResource):
     """
@@ -44,6 +45,17 @@ class Count(BaseResource):
 
                 drawStatistics = DrawStatistics()
                 drawStatistics.event = statistics_object['message']
+                if not statistics_object['data'] or 'index' not in statistics_object['data']:
+                    return
+
+                if drawStatistics.event == 'disable':
+                    if 'base' in statistics_object['type']:
+                        holoTwitterDraw = HoloTwitterDraw().get_by_id(db_session, statistics_object['data']['index'])
+                        holoTwitterDraw.isUse = 'N'
+                    elif 'custom' in statistics_object['type'] :
+                        holoTwitterCustomDraw = HoloTwitterCustomDraw().get_by_id(db_session, statistics_object['data']['index'])
+                        holoTwitterCustomDraw.isUse = 'N'
+
                 drawStatistics.user_uuid = statistics_object['user']
                 if statistics_object['type'] == 'base':
                     drawStatistics.holo_twitter_draw_id = statistics_object['data']['index']
@@ -52,8 +64,6 @@ class Count(BaseResource):
 
                 db_session.add(drawStatistics)
                 db_session.commit()
-                # for i in statistics_connection_clients:
-                    # sending = await i.send_media(statistics_object)
 
             except WebSocketDisconnected:
                 LOG.error("statistic websocket WebSocketDisconnected")
