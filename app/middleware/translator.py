@@ -14,12 +14,12 @@ class JSONTranslator(object):
     async def process_request(self, req, res):
         if req.content_type is not None and "json" in req.content_type:
             try:
-                raw_json = req.stream.read()
+                data = await req.stream.read()
             except Exception:
                 message = 'Read Error'
                 raise falcon('Bad request', message)
             try:
-                req.context['data'] = json.loads(raw_json.decode('utf-8'))
+                req.context['data'] = json.loads(data)
             except ValueError:
                 raise InvalidParameterError('No JSON object could be decoded or Malformed JSON')
             except UnicodeDecodeError:

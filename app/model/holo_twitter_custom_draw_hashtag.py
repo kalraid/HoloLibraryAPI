@@ -11,7 +11,7 @@ from app.model import Base
 class HoloTwitterCustomDrawHashtag(Base):
     __tablename__ = 'holo_twitter_custom_draw_hashtag'
 
-    hashtag = Column(String(500), nullable=False)
+    hashtag = Column(String(500), nullable=False, index=True)
     datatype = Column(String(30), nullable=False) # init, tweet, img
     tagtype = Column(String(30), nullable=False) # base, fanart, stream
 

@@ -15,7 +15,7 @@ LOG = log.get_logger()
 class HoloMemberTwitterHashtag(Base):
     __tablename__ = 'holo_member_twitter_hashtag'
 
-    hashtag = Column(String(500), nullable=False)
+    hashtag = Column(String(500), nullable=False, index=True)
     datatype = Column(String(30), nullable=False)  # init, tweet, img
     tagtype = Column(String(30), nullable=False)  # base, fanart, stream
 
@@ -44,9 +44,9 @@ class HoloMemberTwitterHashtag(Base):
     def get_group_by_hashtag_two_month(cls, session):
         before_two_month = datetime.now() + timedelta(weeks=2 * 4)
 
-        hashtags = session.query(HoloMemberTwitterHashtag.hashtag).filter(
-            HoloMemberTwitterHashtag.isUse == "Y").filter(HoloMemberTwitterHashtag.created < before_two_month).group_by(
-            HoloMemberTwitterHashtag.hashtag).order_by(HoloMemberTwitterHashtag.created).limit(250).all()
+        hashtags = session.query(HoloMemberTwitterHashtag.hashtag).filter(HoloMemberTwitterHashtag.isUse == "Y")\
+            .filter(HoloMemberTwitterHashtag.created < before_two_month)\
+            .group_by(HoloMemberTwitterHashtag.hashtag).order_by(HoloMemberTwitterHashtag.created).limit(250).all()
         LOG.info("len list : {}".format(len(hashtags)))
         return list(map(lambda i: i[0].strip(), hashtags))
 
