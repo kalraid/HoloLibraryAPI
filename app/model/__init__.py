@@ -2,6 +2,8 @@
 
 from .base import Base
 from .draw_statistics import DrawStatistics
+from .draw_statistics_manual import DrawStatisticsMenual
+from .draw_statistics_manual_history import DrawStatisticsMenualHistory
 from .holo_company import HoloCompany
 from .holo_member import HoloMember
 from .holo_member_ch import HoloMemberCh

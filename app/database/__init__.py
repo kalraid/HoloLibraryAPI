@@ -21,9 +21,9 @@ def get_engine(uri):
     LOG.info("Connecting to database..")
     options = {
         "pool_recycle": 3600,
-        "pool_size": 10,
+        "pool_size": 30,
         "pool_timeout": 30,
-        "max_overflow": 30,
+        "max_overflow": 70,
         "echo": config.DB_ECHO,
         "execution_options": {"autocommit": config.DB_AUTOCOMMIT},
     }
@@ -41,8 +41,8 @@ def get_session():
 def init_session():
     db_session.configure(bind=engine)
 
-    #__init_table__()
-    #__init_data__()
+    __init_table__()
+    #init_data()
 
 
 def __init_table__():
@@ -51,13 +51,13 @@ def __init_table__():
     create_all(engine)
 
 
-def __init_data__():
+def init_data():
     get_member_data(db_session)
     get_channel_data(db_session)
-    get_member_img_data(db_session) # TODO need duplicate check
+    get_member_img_data(db_session)
     get_twitter_data(db_session)
-    get_twitter_tags_data(db_session)  # TODO need duplicate check
-    get_youtube_banner(db_session) # TODO need duplicate check
+    get_twitter_tags_data(db_session)
+    get_youtube_banner(db_session)
 
 def drop_all(engine):
     metadata = Base.metadata

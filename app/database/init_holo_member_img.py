@@ -16,14 +16,21 @@ def get_member_img_data(db_session):
     for index, data_row in df.iterrows():
         holoMember = HoloMember().find_by_id(db_session, data_row[0])
 
-        holoMemberImg = HoloMemberImage()
+        holoMemberImg =  db_session.query(HoloMemberImage).filter(HoloMemberImage.member == holoMember) \
+                .filter(HoloMemberImage.img_type == 'small').first()
+        if holoMemberImg is None:
+            holoMemberImg = HoloMemberImage()
+
         holoMemberImg.member = holoMember
         small_img = data_row[1]
         holoMemberImg.img_url = small_img
         holoMemberImg.img_type = 'small'
-        db_session.add(holoMemberImg)
 
-        holoMemberImg = HoloMemberImage()
+        holoMemberImg =  db_session.query(HoloMemberImage).filter(HoloMemberImage.member == holoMember) \
+            .filter(HoloMemberImage.img_type == 'circle').first()
+        if holoMemberImg is None:
+            holoMemberImg = HoloMemberImage()
+
         holoMemberImg.member = holoMember
         circle_img = data_row[2]
         if circle_img != '-':
@@ -37,17 +44,24 @@ def get_member_img_data(db_session):
 
         if "," in large_img:
             for i in large_img.split(","):
-                holoMemberImg = HoloMemberImage()
+                holoMemberImg =  db_session.query(HoloMemberImage).filter(HoloMemberImage.member == holoMember) \
+                    .filter(HoloMemberImage.img_type == 'large').first()
+                if holoMemberImg is None:
+                    holoMemberImg = HoloMemberImage()
+
                 holoMemberImg.member = holoMember
                 holoMemberImg.img_url = i
                 holoMemberImg.img_type = 'large'
-                db_session.add(holoMemberImg)
+                db_session.query(HoloMemberImage).filter()
         else:
-            holoMemberImg = HoloMemberImage()
+            holoMemberImg =  db_session.query(HoloMemberImage).filter(HoloMemberImage.member == holoMember) \
+                .filter(HoloMemberImage.img_type == 'large').first()
+            if holoMemberImg is None:
+                holoMemberImg = HoloMemberImage()
+
             holoMemberImg.member = holoMember
             holoMemberImg.img_url = large_img
             holoMemberImg.img_type = 'large'
-            db_session.add(holoMemberImg)
 
     db_session.commit()
     LOG.debug(' init data - get_member_data end ')

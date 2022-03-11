@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import random
+
 from sqlalchemy import func, desc
 from sqlalchemy.orm import aliased
 
@@ -157,11 +159,24 @@ class DrawsLive(BaseResource):
             type = params['type']
             if type == 'random':
                 LOG.info(f'random type : {type}, tagType : {tagTypes}')
-                draw_dbs = session.query(HoloTwitterDraw) \
-                    .join(HoloTwitterDrawHashtag) \
+
+                subquery = session.query(HoloTwitterDraw) \
+                    .filter(HoloTwitterDraw.isUse == 'Y').subquery()
+                alias = aliased(HoloTwitterDraw, subquery)
+
+                subquery2 = session.query(HoloTwitterDrawHashtag) \
                     .join(HoloMemberHashtag, HoloTwitterDrawHashtag.hashtag == HoloMemberHashtag.hashtag) \
-                    .filter(HoloTwitterDraw.isUse == 'Y') \
-                    .filter(HoloMemberHashtag.tagtype.in_(tagTypes)).order_by(func.rand()).limit(60 * 60).all()
+                    .filter(HoloMemberHashtag.tagtype.in_(tagTypes)) \
+                    .subquery()
+                alias2 = aliased(HoloTwitterDrawHashtag, subquery2)
+
+                draw_dbs = session.query(alias) \
+                    .join(alias2, alias.index == alias2.holo_twitter_draw_id) \
+                    .limit(60 * 60).all()
+
+
+
+
             elif type == 'recommend':
                 LOG.info(f'recommend type : {type}, tagType : {tagTypes}')
                 Ids = session.query(DrawStatistics.holo_twitter_draw_id) \
@@ -172,17 +187,18 @@ class DrawsLive(BaseResource):
                     .limit(60 * 60)
 
                 draw_dbs = session.query(HoloTwitterDraw) \
-                    .filter(HoloTwitterDraw.isUse == 'Y') \
                     .join(Ids) \
                     .limit(60 * 60).all()
             else:
-                draw_dbs = session.query(HoloTwitterDraw).order_by(func.rand()).limit(60 * 60).all()
+                draw_dbs = session.query(HoloTwitterDraw).limit(60 * 60).all()
 
             filters['type'] = type
             filters['tagType'] = type_param
         else:
             raise NotSupportedError("GET", "/v1/tweet/draws/live")
 
+        # LOG.info(f' first object index is {draw_dbs[0].index}')
+        random.shuffle(draw_dbs)
         list = alchemy.db_result_to_dict_list(draw_dbs)
 
         obj = {'len': len(list), 'filters': filters, 'tweet_list': list}

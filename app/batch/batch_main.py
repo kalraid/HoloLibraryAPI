@@ -35,6 +35,8 @@ if __name__ == "__main__":
     twitterTagthreading.start()
     twitterCustomTagthreading = BatchThreading.TwitterCustomTagThreading()
     twitterCustomTagthreading.start()
+    dataInitThreading = BatchThreading.DataInitThreading()
+    dataInitThreading.start()
 
     import uvicorn
 

@@ -22,32 +22,30 @@ def get_twitter_tags_data(db_session):
                         hashtag = hashtag_str.strip()
                         if hashtag[0] != '#':
                             hashtag = '#' + hashtag
-                        holoMemberHashtag = HoloMemberHashtag()
+
+                        holoMemberHashtag = db_session.query(HoloMemberHashtag).filter(HoloMemberHashtag.member_id == member.index) \
+                            .filter(HoloMemberHashtag.hashtag == hashtag).first()
+
+                        if holoMemberHashtag is None:
+                            holoMemberHashtag = HoloMemberHashtag()
+
                         holoMemberHashtag.hashtag = hashtag;
                         holoMemberHashtag.datatype = "init";
                         holoMemberHashtag.tagtype = names[index+1];
                         holoMemberHashtag.member = member
 
-                        item = db_session.query(HoloMemberHashtag).filter(
-                            HoloMemberHashtag.member_id == member.index
-                            and HoloMemberHashtag.hashtag == holoMemberHashtag.hashtag).first()
-
-                        if item is None:
-                            db_session.add(holoMemberHashtag)
-
                 else:
-                    holoMemberHashtag = HoloMemberHashtag()
+                    holoMemberHashtag = db_session.query(HoloMemberHashtag).filter(HoloMemberHashtag.member_id == member.index) \
+                        .filter(HoloMemberHashtag.hashtag == value).first()
+
+                    if holoMemberHashtag is None:
+                        holoMemberHashtag = HoloMemberHashtag()
+
                     holoMemberHashtag.hashtag = value;
                     holoMemberHashtag.datatype = "init";
                     holoMemberHashtag.tagtype = names[index+1];
                     holoMemberHashtag.member = member
 
-                    item = db_session.query(HoloMemberHashtag).filter(
-                        HoloMemberHashtag.member_id == member.index
-                        and HoloMemberHashtag.hashtag == holoMemberHashtag.hashtag).first()
-
-                    if item is None:
-                        db_session.add(holoMemberHashtag)
 
     db_session.commit()
     LOG.debug(' init data - get_twitter_data end ')
