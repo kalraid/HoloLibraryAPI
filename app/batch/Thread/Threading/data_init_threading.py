@@ -14,8 +14,8 @@ class DataInitThreading(threading.Thread):
         super().__init__()
 
     def run(self):
-        s = schedule.every().day.at("01:00").do(self.job())
+        s = schedule.every().day.at("01:00").do(job())
 
 
-    def job(self):
-        init_data()
+def job(self):
+    init_data()
