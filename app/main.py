@@ -54,6 +54,7 @@ class App(falcon.asgi.App):
 
         self.add_error_handler(AppError, AppError.handle)
 
+
 init_session()
 middleware = [CORSMiddleware(), AuthHandler(), JSONTranslator(), DatabaseSessionManager(db_session), WebsocketHandler()]
 application = App(middleware=middleware, cors_enable=True)

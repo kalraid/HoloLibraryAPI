@@ -74,14 +74,14 @@ class Count(BaseResource):
                 elif event in DrawStatisticsMenualHistory().get_manual_event_names():  # like, dislike, adult, ban
                     drawStatisticsMenualHistory = DrawStatisticsMenualHistory()
                     drawStatisticsMenualHistory.event = event
+                    draw_type = statistics_object['drawType']
 
-                    img_type = statistics_object['artType']
                     if event == 'ban':  # isUse - N
-                        if img_type == 'base':
+                        if 'first' in draw_type:
                             holoTwitterDraw = HoloTwitterDraw() \
                                 .get_by_id(db_session, statistics_object['data']['index'])
                             holoTwitterDraw.isUse = 'N'
-                        elif img_type == 'custom':
+                        elif 'second' in draw_type:
                             holoTwitterCustomDraw = HoloTwitterCustomDraw() \
                                 .get_by_id(db_session, statistics_object['data']['index'])
                             holoTwitterCustomDraw.isUse = 'N'
@@ -89,13 +89,12 @@ class Count(BaseResource):
                     drawStatisticsMenualHistory.user_uuid = statistics_object['user']
 
                     draw_id = statistics_object['data']['index']
-                    if img_type == 'base':
+                    if 'first' in draw_type:
                         drawStatisticsMenualHistory.holo_twitter_draw_id = draw_id
-                    elif img_type == 'custom':
+                    elif 'second' in draw_type:
                         drawStatisticsMenualHistory.holo_twitter_custom_draw_id = draw_id
 
-                    DrawStatisticsMenual().save_count(db_session, draw_id, img_type, event)
-
+                    save_count(db_session, draw_id, draw_type, event)
                     db_session.add(drawStatisticsMenualHistory)
 
                 db_session.commit()
@@ -113,3 +112,43 @@ class Count(BaseResource):
             except json.JSONDecodeError:
                 LOG.error("statistic websocket JSONDecodeError")
                 pass
+
+
+def save_count(session, draw_id, draw_type, event):
+    if 'first' in draw_type:
+        drawStaticsMenual = session.query(DrawStatisticsMenual) \
+            .filter(DrawStatisticsMenual.holo_twitter_draw_id == draw_id) \
+            .filter(DrawStatisticsMenual.event == event).first()
+    elif 'second' in draw_type:
+        drawStaticsMenual = session.query(DrawStatisticsMenual) \
+            .filter(DrawStatisticsMenual.holo_twitter_custom_draw_id == draw_id) \
+            .filter(DrawStatisticsMenual.event == event).first()
+
+    if drawStaticsMenual is None :
+        drawStaticsMenual = DrawStatisticsMenual()
+        drawStaticsMenual.event = event
+
+        if 'first' in draw_type:
+            drawStaticsMenual.holo_twitter_draw_id = draw_id
+        elif 'second' in draw_type:
+            drawStaticsMenual.holo_twitter_custom_draw_id = draw_id
+
+        if event == 'like':  # like ++
+            drawStaticsMenual.like = 1
+        elif event == 'dislike':  # dislike ++
+            drawStaticsMenual.dislike = 1
+        elif event == 'adult':  # adult ++
+            drawStaticsMenual.ban = 1
+        elif event == 'ban':  # ban' ++
+            drawStaticsMenual.adult = 1
+
+        session.add(drawStaticsMenual)
+    else:
+        if event == 'like':  # like ++
+            drawStaticsMenual.like = 1
+        elif event == 'dislike':  # dislike ++
+            drawStaticsMenual.dislike = 1
+        elif event == 'adult':  # adult ++
+            drawStaticsMenual.ban = 1
+        elif event == 'ban':  # ban' ++
+            drawStaticsMenual.adult = 1

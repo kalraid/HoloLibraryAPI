@@ -15,7 +15,7 @@ twitter_api = twitter.Api(consumer_key=CONST.TWITTER_CONSUMER_KEY,
                           access_token_secret=CONST.TWITTER_ACCESS_SECRET)
 
 
-def get_twitter_data():
+def get_twitter_data(): # TODO automation
     LOG.debug(' init data - get_twitter_data start ')
     sheet_name = 'twitter'
     df = get_init_datasheet(sheet_name)
