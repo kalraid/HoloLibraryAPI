@@ -1,8 +1,11 @@
 import log
+from app.database import get_session, init_session
 
 LOG = log.get_logger()
+init_session()
+db_session = get_session()
 
-def get_youtube_data(db_session):
+def get_youtube_data():
     pass
     # channelStr = ''
     # if channelList:
