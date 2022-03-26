@@ -21,16 +21,17 @@ class DrawStatisticsMenual(Base):
     dislike = Column(Integer, nullable=False, default=0)
     adult = Column(Integer, nullable=False, default=0)
     ban = Column(Integer, nullable=False, default=0)
-    #need to click, download, ?
 
     def __repr__(self):
-        return "<DrawStatisticsMenual(index='%s', holo_twitter_draw_id='%s', holo_twitter_custom_draw_id='%s',event='%s',like='%s',dislike='%s')>" % (
+        return "<DrawStatisticsMenual(index='%s', holo_twitter_draw_id='%s', holo_twitter_custom_draw_id='%s',event='%s',like='%s',dislike='%s',adult='%s',ban='%s')>" % (
             self.index,
             self.holo_twitter_draw_id,
             self.holo_twitter_custom_draw_id,
             self.event,
             self.like,
-            self.dislike
+            self.dislike,
+            self.adult,
+            self.ban,
         )
 
     @classmethod
@@ -38,6 +39,6 @@ class DrawStatisticsMenual(Base):
         return DrawStatisticsMenual.index
 
     FIELDS = {"index": int, "holo_twitter_draw_id": str, "holo_twitter_custom_draw_id": str, "event": str,
-              "like": int, "dislike": int}
+              "like": int, "dislike": int, "adult": int, "ban": int}
 
     FIELDS.update(Base.FIELDS)

@@ -107,7 +107,6 @@ class Count(BaseResource):
                 return
             except TypeError:
                 LOG.error("statistic websocket TypeError")
-
                 pass
             except json.JSONDecodeError:
                 LOG.error("statistic websocket JSONDecodeError")
@@ -145,9 +144,9 @@ def save_count(session, draw_id, draw_type, event):
         session.add(drawStaticsMenual)
     else:
         if event == 'like':  # like ++
-            drawStaticsMenual.like = 1
+            drawStaticsMenual.like += 1
         elif event == 'dislike':  # dislike ++
-            drawStaticsMenual.dislike = 1
+            drawStaticsMenual.dislike += 1
         elif event == 'adult':  # adult ++
             drawStaticsMenual.ban = 1
         elif event == 'ban':  # ban' ++
