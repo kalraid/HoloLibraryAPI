@@ -194,7 +194,7 @@ class DrawsLive(BaseResource):
 
                 draw_dbs = session.query(alias) \
                     .join(alias2, alias.index == alias2.holo_twitter_draw_id) \
-                    .order_by(desc(func.count(HoloTwitterDraw.index))) \
+                    .limit(60 * 60 ) \
                     .all()
 
                 random.shuffle(draw_dbs)
