@@ -14,7 +14,7 @@ from .init_holo_member_twitter import get_twitter_data
 from .init_holo_member_twitter_tags import get_twitter_tags_data
 from .init_youtube_banner import get_youtube_banner
 from .init_youtube_stream_list import get_youtube_data
-from .init_twitter_banner import get_init_datasheet
+from .init_twitter_banner import get_twitter_banner
 
 LOG = log.get_logger()
 
@@ -60,8 +60,8 @@ def init_data():
     get_member_img_data(db_session)
     get_twitter_data(db_session)
     get_twitter_tags_data(db_session)
+    get_twitter_banner(db_session)
     get_youtube_banner(db_session)
-    get_init_datasheet(db_session)
     get_youtube_data(db_session)
 
 def drop_all(engine):

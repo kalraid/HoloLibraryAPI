@@ -48,7 +48,7 @@ def __craw_youtube_banner__(channelList) -> array:
 
     url = "https://www.googleapis.com/youtube/v3/channels" \
           + "?id=&part=id&part=snippet&part=brandingSettings" + "&key=AIzaSyAa8yy0GdcGPHdtD083HiGGx_S0vMPScDM" \
-          + "&maxResults=100"+ "&id=" + channelStr
+          + "&maxResults=100" + "&id=" + channelStr
 
     # https://content-youtube.googleapis.com/youtube/v3/channels?id=&part=id&part=snippet&part=brandingSettings&key=AIzaSyAa8yy0GdcGPHdtD083HiGGx_S0vMPScDM
 
@@ -62,6 +62,5 @@ def __craw_youtube_banner__(channelList) -> array:
     #         title = i['snippet']['title']
     #         channelId = i['snippet']['resourceId']['channelId']
     #         publishedAt = i['snippet']['publishedAt']
-
 
     return result

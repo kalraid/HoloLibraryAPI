@@ -8,8 +8,6 @@ from app.utils.itertools import partition
 
 LOG = log.get_logger()
 
-
-
 def get_youtube_banner(db_session):
     channelList = []
 
@@ -23,6 +21,7 @@ def get_youtube_banner(db_session):
         LOG.info(i)
 
     db_session.commit()
+
 
 def __craw_youtube_banner__(channelList) -> array:
     result = []

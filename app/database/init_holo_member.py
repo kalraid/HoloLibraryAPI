@@ -2,7 +2,6 @@ import log
 from app.model.holo_member import HoloMember
 from app.module.google_api.drive import get_init_datasheet
 
-
 LOG = log.get_logger()
 
 

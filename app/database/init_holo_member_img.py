@@ -16,8 +16,8 @@ def get_member_img_data(db_session):
     for index, data_row in df.iterrows():
         holoMember = HoloMember().find_by_id(db_session, data_row[0])
 
-        holoMemberImg =  db_session.query(HoloMemberImage).filter(HoloMemberImage.member == holoMember) \
-                .filter(HoloMemberImage.img_type == 'small').first()
+        holoMemberImg = db_session.query(HoloMemberImage).filter(HoloMemberImage.member == holoMember) \
+            .filter(HoloMemberImage.img_type == 'small').first()
         if holoMemberImg is None:
             holoMemberImg = HoloMemberImage()
 
@@ -26,7 +26,7 @@ def get_member_img_data(db_session):
         holoMemberImg.img_url = small_img
         holoMemberImg.img_type = 'small'
 
-        holoMemberImg =  db_session.query(HoloMemberImage).filter(HoloMemberImage.member == holoMember) \
+        holoMemberImg = db_session.query(HoloMemberImage).filter(HoloMemberImage.member == holoMember) \
             .filter(HoloMemberImage.img_type == 'circle').first()
         if holoMemberImg is None:
             holoMemberImg = HoloMemberImage()
@@ -44,7 +44,7 @@ def get_member_img_data(db_session):
 
         if "," in large_img:
             for i in large_img.split(","):
-                holoMemberImg =  db_session.query(HoloMemberImage).filter(HoloMemberImage.member == holoMember) \
+                holoMemberImg = db_session.query(HoloMemberImage).filter(HoloMemberImage.member == holoMember) \
                     .filter(HoloMemberImage.img_type == 'large').first()
                 if holoMemberImg is None:
                     holoMemberImg = HoloMemberImage()
@@ -54,7 +54,7 @@ def get_member_img_data(db_session):
                 holoMemberImg.img_type = 'large'
                 db_session.query(HoloMemberImage).filter()
         else:
-            holoMemberImg =  db_session.query(HoloMemberImage).filter(HoloMemberImage.member == holoMember) \
+            holoMemberImg = db_session.query(HoloMemberImage).filter(HoloMemberImage.member == holoMember) \
                 .filter(HoloMemberImage.img_type == 'large').first()
             if holoMemberImg is None:
                 holoMemberImg = HoloMemberImage()
