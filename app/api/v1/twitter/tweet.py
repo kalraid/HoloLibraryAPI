@@ -194,7 +194,7 @@ class DrawsLive(BaseResource):
 
                 draw_dbs = session.query(alias) \
                     .join(alias2, alias.index == alias2.holo_twitter_draw_id) \
-                    .limit(60 * 60 ) \
+                    .limit(60 * 60) \
                     .all()
 
                 random.shuffle(draw_dbs)
@@ -206,13 +206,17 @@ class DrawsLive(BaseResource):
                     .filter(DrawStatistics.holo_twitter_draw_id is not None) \
                     .filter(HoloMemberHashtag.tagtype.in_(tagTypes)) \
                     .order_by(desc(func.count(DrawStatistics.index))) \
-                    .limit(60 * 60)
+                    .limit(60 * 60) \
+                    .subquery()
+                alias = aliased(DrawStatistics, Ids)
 
                 draw_dbs = session.query(HoloTwitterDraw) \
-                    .join(Ids) \
-                    .limit(60 * 60).all()
+                    .filter(HoloTwitterDraw.isUse == 'Y') \
+                    .join(alias) \
+                    .filter(alias.index is not None) \
+                    .all()
             else:
-                draw_dbs = session.query(HoloTwitterDraw).limit(60 * 60).all()
+                draw_dbs = session.query(HoloTwitterDraw).filter(HoloTwitterDraw.isUse == 'Y').limit(60 * 60).all()
                 random.shuffle(draw_dbs)
 
             filters['type'] = type
