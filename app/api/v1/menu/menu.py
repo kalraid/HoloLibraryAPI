@@ -139,13 +139,8 @@ class Menu(BaseResource):
                 'role': 'user'
             },
             {
-                'menu_name': '이벤트',  # custom live tags
+                'menu_name': '최근에 업로드된 태그',  # custom live tags
                 'menu_id': 'M20304',
-                'role': 'user'
-            },
-            {
-                'menu_name': '전체',  # base + custom live tags all
-                'menu_id': 'M20305',
                 'role': 'user'
             },
             {
@@ -154,28 +149,13 @@ class Menu(BaseResource):
                 'role': 'user'
             },
             {
-                'menu_name': '최신 트윗',
+                'menu_name': '멤버별 최신 트윗',
                 'menu_id': 'M20401',
                 'role': 'user'
             },
             {
-                'menu_name': '타임 라인 트윗',
+                'menu_name': '멤버별 타임 라인',
                 'menu_id': 'M20402',
-                'role': 'user'
-            },
-            {
-                'menu_name': '리트윗 모음',
-                'menu_id': 'M20403',
-                'role': 'user'
-            },
-            {
-                'menu_name': '기본 태그 트윗',
-                'menu_id': 'M20404',
-                'role': 'user'
-            },
-            {
-                'menu_name': '일회성 태그 트윗',
-                'menu_id': 'M20405',
                 'role': 'user'
             }
         ]
