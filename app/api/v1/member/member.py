@@ -48,14 +48,15 @@ class Collection(BaseResource):
         if queryString.get('user_id'):
             member_ch_dbs = session.query(HoloMemberCh, UserStaticYoutube.sub_date, HoloMember.member_classification,
                                           HoloMember.member_generation) \
-                .join(UserStaticYoutube, UserStaticYoutube.channel_id == HoloMemberCh.channel_id) \
+                .join(UserStaticYoutube, UserStaticYoutube.channel_id == HoloMemberCh.channel_id, isouter=True) \
                 .join(HoloMember, HoloMember.member_name_kor == HoloMemberCh.member_name).all()
 
             member_ch_list = []
             for i in member_ch_dbs:
                 # LOG.info(f" type(i) : {type(i)}, i : {i[0]} , i[1] : {i[1]}")
                 temp = i[0].to_dict()
-                temp['sub_date'] = i[1].strftime('%Y-%m-%d')
+                if i[1]:
+                    temp['sub_date'] = i[1].strftime('%Y-%m-%d')
                 temp['class'] = i[2]
                 temp['genera'] = i[3]
                 member_ch_list.append(temp)
@@ -89,8 +90,8 @@ class List(BaseResource):
         if 'index' in params and params['index']:
             member_index = params['index']
             member_dbs = session.query(HoloMember, HoloMemberImage.img_url) \
-                .join(HoloMemberImage,HoloMemberImage.member_id == HoloMember.index). \
-                filter(HoloMemberImage.img_type == 'small').filter(HoloMember.index == member_index).\
+                .join(HoloMemberImage, HoloMemberImage.member_id == HoloMember.index). \
+                filter(HoloMemberImage.img_type == 'small').filter(HoloMember.index == member_index). \
                 filter(HoloMember.isUse == 'Y').first()
             filters['member_index'] = member_index
 

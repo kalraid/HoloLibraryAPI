@@ -10,6 +10,7 @@ import log
 from app.errors import DatabaseError, ERR_DATABASE_ROLLBACK
 from app.model.holo_member_ch import HoloMemberCh
 from app.model.user_static_youbute import UserStaticYoutube
+from app.utils.itertools import partition
 
 LOG = log.get_logger()
 
@@ -27,40 +28,36 @@ class AnalysisSubscribeThread(threading.Thread):
         time.sleep(1)
 
         LOG.error(self.access_token)
-        # TODO header setting used by user.access_token
         authToken = 'Bearer ' + self.access_token
 
         headers = {'Authorization': authToken}
 
         LOG.info(headers)
-        # TODO select member ch name str list
         channelList = self.session.query(HoloMemberCh.channel_id).all()
 
         # https://developers.google.com/youtube/v3/docs/subscriptions/list?hl=ko&apix_params=%7B%22part%22%3A%5B%22id%2C%20snippet%22%5D%2C%22forChannelId%22%3A%22UC7fk0CB07ly8oSl0aqKkqFg%2CUCp6993wxpyDPHUpavwDFqgg%2CUCoSrY_IQQVpmIRZ9Xf-y93g%2CUCyl1z3jo3XHR1riLFKG5UAg%2CUCL_qhgtOy0dy1Agp8vkySQg%2CUCHsx4Hqa-1ORjQTh9TYDhww%2CUC8rcEBzJSleTkf_-agPM20g%2CUCsUj0dszADCGbF3gNrQEuSQ%2CUC3n5uGu18FoCy23ggWWp8tA%2CUCmbs8T6MWqUHP1tIQvSgKrg%2CUCO_aKKYxn4tvrqPjcTzZ6EQ%2CUCgmPnx-EEeOrZSg5Tiw7ZRQ%2CUCp6993wxpyDPHUpavwDFqgg%22%2C%22maxResults%22%3A100%2C%22mine%22%3Atrue%7D&apix=true#try-it
 
-        channelStr = ''
-        if channelList:
-            for row in channelList.__iter__():
-                channelStr = channelStr + ',' + ''.join(row)
-        else:
-            channelStr = 'UCP0BspO_AMEe3aQqqpo89Dg,UC8rcEBzJSleTkf_-agPM20g,UC7fk0CB07ly8oSl0aqKkqFg,UCp6993wxpyDPHUpavwDFqgg'
-            LOG.info('channelList is empty')
+        chunks = list(partition(channelList, 45))
 
-        url = "https://www.googleapis.com/youtube/v3/subscriptions" \
-              + "?mine=true" + "&part=id%2C%20snippet" + "&maxResults=100" \
-              + "&forChannelId=" + "UCP0BspO_AMEe3aQqqpo89Dg" + channelStr
-        # + "&forChannelId=" + "UC7fk0CB07ly8oSl0aqKkqFg%2CUCp6993wxpyDPHUpavwDFqgg"+','+channelStr
+        for item in chunks:
+            channelStr = ''
+            if channelList:
+                for row in item.__iter__():
+                    channelStr = channelStr + ',' + ''.join(row)
+            else:
+                channelStr = 'UCP0BspO_AMEe3aQqqpo89Dg,UC8rcEBzJSleTkf_-agPM20g,UC7fk0CB07ly8oSl0aqKkqFg,UCp6993wxpyDPHUpavwDFqgg'
+                LOG.info('channelList is empty')
 
-        # test url ( base subscribe list of mine ) : https://content-youtube.googleapis.com/youtube/v3/subscriptions?maxResults=100&part=snippet&mine=true
+            # test url ( base subscribe list of mine ) : https://content-youtube.googleapis.com/youtube/v3/subscriptions?maxResults=100&part=snippet&mine=true
+            url = "https://www.googleapis.com/youtube/v3/subscriptions" \
+                  + "?mine=true" + "&part=id%2C%20snippet" + "&maxResults=50" \
+                  + "&forChannelId=" + channelStr
 
-        # TODO get send
-        r = requests.get(url=url, headers=headers)
-        # TODO update user_static_youtube
-        # LOG.info(r.json())
+            r = requests.get(url=url, headers=headers)
 
-        self.__update_user_static__(r.json())
+            self.__update_user_static__(r.json())
+
         self.__session_close__()
-
         print("AnalysisSubscribe thread end spend time : ", (time.perf_counter() - start))
 
     def __update_user_static__(self, json):

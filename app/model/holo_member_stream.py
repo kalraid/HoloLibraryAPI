@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from sqlalchemy import Column
+from sqlalchemy import Column, ForeignKey
 from sqlalchemy import String, Integer, DATE
+from sqlalchemy.orm import relationship
 
 from app.model import Base
 
@@ -9,12 +10,35 @@ from app.model import Base
 class HoloMemberStream(Base):
     __tablename__ = 'holo_member_stream'
 
-
     id = Column(Integer, primary_key=True)
-    name = Column(String(300), nullable=False)
-    member_name = Column(String(80), nullable=False)  ## == holo_member.name
+
+    member_id = Column(Integer, ForeignKey('holo_member.index'))
+    member = relationship("HoloMember", backref="holo_member_stream")
+
+    # item.id.videoId
+    video_id = Column(String(50), nullable=False)
+    # item.id.videoId
+    video_id = Column(String(50), nullable=False)
+
     start_date = Column(DATE, nullable=True)
     end_date = Column(DATE, nullable=True)
+    #
+    # pageInfo.totalResults
+    # pageInfo.resultsPerPage
+    # snippet.publishedAt
+    # snippet.channelId
+    # snippet.title
+    #
+    # snippet.thumbnails.dafault.url
+    # snippet.channelTitle
+    #
+    # snippet.channelId
+    # snippet.title
+    # snippet.description
+    # snippet.publishedAt
+    # snippet.channelTitle
+    # snippet.thumbnails.high.url
+    # snippet.liveBroadcastContent
 
     def __repr__(self):
         return "<HoloMemberStream(id='%s', name='%s', member_name='%s', start_date='%s', end_date='%s')>" % (
