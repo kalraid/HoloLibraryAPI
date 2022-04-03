@@ -44,8 +44,7 @@ def init_session():
     db_session.configure(bind=engine)
 
     __init_table__()
-    if config.APP_ENV == 'live':
-        init_data()
+    init_data()
 
 
 def __init_table__():
