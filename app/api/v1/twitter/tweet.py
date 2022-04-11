@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import random
-from datetime import datetime
+import datetime
 
 from sqlalchemy import func, desc, text
 from sqlalchemy.orm import aliased
@@ -8,6 +8,7 @@ from sqlalchemy.sql.elements import or_
 
 import log
 from app.api.common import BaseResource
+from app.api.common.base import SessionCommonAlias
 from app.errors import NotSupportedError
 from app.model import HoloTwitterDraw, HoloMemberTwitterInfo, \
     HoloMemberTweet, HoloMemberHashtag, HoloTwitterDrawHashtag, HoloTwitterCustomDraw, HoloTwitterCustomDrawHashtag, \
@@ -44,17 +45,8 @@ class Draws(BaseResource):
 
             member_id = params['member_id']
 
-            not_show_draw = session.query(DrawStatisticsMenual.holo_twitter_draw_id,
-                                          DrawStatisticsMenual.holo_twitter_custom_draw_id,
-                                          func.sum(DrawStatisticsMenual.like).label('like'),
-                                          func.sum(DrawStatisticsMenual.dislike).label('dislike'),
-                                          func.sum(DrawStatisticsMenual.adult).label('adult'),
-                                          func.sum(DrawStatisticsMenual.ban).label('ban')
-                                          ).group_by(DrawStatisticsMenual.holo_twitter_draw_id,
-                                                     DrawStatisticsMenual.holo_twitter_custom_draw_id). \
-                filter(or_(text("adult > 0"), text("ban > 0"), text("dislike > 8"))).subquery()
-            alias = aliased(DrawStatisticsMenual, not_show_draw)
-            LOG.info(not_show_draw)
+            alias = SessionCommonAlias.ban_images(session)
+            LOG.info(alias)
 
             if 'hashtags' in params and params['hashtags']:
                 hashtags = params['hashtags']
@@ -178,7 +170,7 @@ class DrawsLive(BaseResource):
             type = params['type']
             if type == 'random':
                 LOG.info(f'random type : {type}, tagType : {tagTypes}')
-                number = str(round(datetime.now().timestamp()))[-2:]
+                number = str(round(datetime.datetime.now().timestamp()))[-2:]
                 subquery = session.query(HoloTwitterDraw) \
                     .filter(HoloTwitterDraw.isUse == 'Y') \
                     .filter(HoloTwitterDraw.index.like('%' + number[0])) \
@@ -420,4 +412,66 @@ class CustomTags(BaseResource):
         list = alchemy.db_result_to_dict_list(second_tags)
 
         obj = {'len': len(list), 'filters': filters, 'custom_tags': list}
+        self.on_success(res, obj)
+
+
+class RenewerDraws(BaseResource):
+    """
+    Handle for endpoint: /v1/tweet/renewer/draws
+    """
+
+    async def on_get(self, req, res):
+        session = req.context["session"]
+        params = req.params
+        filters = {}
+
+        alias = SessionCommonAlias.ban_images(self, session)
+        LOG.info(alias)
+
+        if 'tagType' in params and params['tagType']:
+            tagType = params['tagType']
+            yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+
+            draw_dbs = session.query(HoloTwitterDraw, HoloTwitterDrawHashtag.tagtype,
+                                     HoloTwitterDrawHashtag.datatype,
+                                     HoloMemberHashtag.hashtag, HoloMemberHashtag.member_id,
+                                     HoloMemberHashtag.tagtype,
+                                     HoloMemberHashtag.datatype) \
+                .filter(HoloTwitterDraw.isUse == 'Y') \
+                .join(HoloTwitterDrawHashtag, HoloTwitterDrawHashtag.holo_twitter_draw_id == HoloTwitterDraw.index) \
+                .join(HoloMemberHashtag, HoloMemberHashtag.hashtag == HoloTwitterDrawHashtag.hashtag) \
+                .outerjoin(alias, alias.holo_twitter_draw_id == HoloTwitterDraw.index) \
+                .filter(alias.holo_twitter_draw_id == None) \
+                .filter(HoloMemberHashtag.tagtype == tagType) \
+                .filter(HoloTwitterDraw.created > yesterday) \
+                .order_by(HoloTwitterDraw.created.desc()).limit(60000) \
+                .all()
+            filters['tagType'] = tagType
+
+        # data = alchemy.db_result_to_dict_list(draw_dbs)
+        list = []
+        if type(list) == type(draw_dbs):
+            for i in draw_dbs:
+                temp = i[0].to_dict()
+                temp['tag_type'] = i[1]
+                temp['tag_datatype'] = i[2]
+                temp['hashtag'] = i[3]
+                temp['member_id'] = i[4]
+                temp['memtag_type'] = i[5]
+                temp['memtag_datatype'] = i[6]
+
+                list.append(temp)
+        else:
+            if draw_dbs is not None and len(draw_dbs) != 0:
+                temp = draw_dbs[0].to_dict()
+                temp['tag_type'] = draw_dbs[1]
+                temp['tag_datatype'] = draw_dbs[2]
+                temp['hashtag'] = draw_dbs[3]
+                temp['member_id'] = draw_dbs[4]
+                temp['memtag_type'] = draw_dbs[5]
+                temp['memtag_datatype'] = draw_dbs[6]
+
+                list.append(temp)
+
+        obj = {'len': len(list), 'filters': filters, 'draw_list': list, 'draw_type': 'first'}
         self.on_success(res, obj)
