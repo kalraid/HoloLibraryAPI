@@ -45,7 +45,7 @@ class Draws(BaseResource):
 
             member_id = params['member_id']
 
-            alias = SessionCommonAlias.ban_images(session)
+            alias = SessionCommonAlias.ban_images(self, session)
             LOG.info(alias)
 
             if 'hashtags' in params and params['hashtags']:
