@@ -47,6 +47,8 @@ class App(falcon.asgi.App):
         self.add_route("/v1/tweet/custom/draws", tweet.CustomDraws())
         self.add_route("/v1/tweet/custom/tags", tweet.CustomTags())
 
+        self.add_route("/v1/tweet/renewer/draws", tweet.RenewerDraws())
+
         self.add_route("/v1/tweet/detail", tweet.TweetInfo())
         self.add_route("/v1/tweet/ids", tweet.TweetIds())
 

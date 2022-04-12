@@ -3,6 +3,10 @@
 import json
 
 import falcon
+from sqlalchemy import func, or_, text
+from sqlalchemy.orm import aliased
+
+from app.model import DrawStatisticsMenual
 
 try:
     from collections import OrderedDict
@@ -81,3 +85,18 @@ class BaseResource(object):
 
     async def on_delete(self, req, res):
         raise NotSupportedError(method="DELETE", url=req.path)
+
+
+class SessionCommonAlias:
+    def ban_images(self, session):
+        not_show_draw = session.query(DrawStatisticsMenual.holo_twitter_draw_id,
+                                      DrawStatisticsMenual.holo_twitter_custom_draw_id,
+                                      func.sum(DrawStatisticsMenual.like).label('like'),
+                                      func.sum(DrawStatisticsMenual.dislike).label('dislike'),
+                                      func.sum(DrawStatisticsMenual.adult).label('adult'),
+                                      func.sum(DrawStatisticsMenual.ban).label('ban')
+                                      ).group_by(DrawStatisticsMenual.holo_twitter_draw_id,
+                                                 DrawStatisticsMenual.holo_twitter_custom_draw_id). \
+            filter(or_(text("adult > 0"), text("ban > 0"), text("dislike > 8"))).subquery()
+        alias = aliased(DrawStatisticsMenual, not_show_draw)
+        return alias
