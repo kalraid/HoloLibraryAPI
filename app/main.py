@@ -51,8 +51,14 @@ class App(falcon.asgi.App):
         self.add_route("/v1/tweet/ids", tweet.TweetIds())
 
         self.add_route("/v1/tweet/member/{memeber_id}", users.Self())
+        self.add_route("/robots.txt", DenyCrawlers())
 
         self.add_error_handler(AppError, AppError.handle)
+
+
+class DenyCrawlers(object):
+    async def on_get(self, req, resp):
+        resp.body = "User-agent: *\nDisallow: /\n"
 
 
 init_session()
