@@ -16,7 +16,7 @@ class HoloTwitterDraw(Base):
     draw_type = 'base'
 
     def __repr__(self):
-        return "<HoloTwitterDraw(index='%s', twitter_id='%s', url='%s',twitter_user_nm='%s',twitter_user_id='%s',isUse='%s', draw_type='%s')>" % (
+        return "<HoloTwitterDraw(index='%s', twitter_id='%s', url='%s',twitter_user_nm='%s',twitter_user_id='%s',isUse='%s', draw_type='%s', created='%s')>" % (
             self.index,
             self.twitter_id,
             self.url,
@@ -24,6 +24,7 @@ class HoloTwitterDraw(Base):
             self.twitter_user_id,
             self.isUse,
             self.draw_type,
+            self.created,
         )
 
     @classmethod

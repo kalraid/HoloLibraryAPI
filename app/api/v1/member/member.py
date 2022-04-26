@@ -10,6 +10,7 @@ from app.api.common import BaseResource
 from app.model import UserStaticYoutube, HoloMemberCh, HoloMember, HoloMemberHashtag, HoloMemberTweet, \
     HoloMemberTwitterInfo, HoloMemberImage
 from app.utils import alchemy
+from sqlalchemy import func
 
 LOG = log.get_logger()
 
@@ -236,10 +237,17 @@ class TweetLive(BaseResource):
 
             filters['type'] = params['type']
         else:
-            tweet_dbs = session.query(HoloMemberTweet, HoloMemberTwitterInfo.index) \
-                .join(HoloMemberTwitterInfo) \
-                .order_by(HoloMemberTweet.index.desc()) \
-                .group_by(HoloMemberTweet.holo_member_twitter_info_id).all()
+
+            sub_query = session.query(HoloMemberTweet.holo_member_twitter_info_id,
+                                      func.max(HoloMemberTweet.date).label('last_order_date')) \
+                .group_by(HoloMemberTweet.holo_member_twitter_info_id).subquery()
+
+            tweet_dbs = session.query(HoloMemberTweet, HoloMemberTwitterInfo.member_id) \
+                .join(sub_query,
+                      (HoloMemberTweet.holo_member_twitter_info_id == sub_query.c.holo_member_twitter_info_id) & (HoloMemberTweet.date == sub_query.c.last_order_date)) \
+                .join(HoloMemberTwitterInfo,
+                      HoloMemberTwitterInfo.twitter_id == HoloMemberTweet.holo_member_twitter_info_id, isouter=True) \
+                .all()
 
         # list = alchemy.db_result_to_dict_list(tweet_dbs)
         list = []

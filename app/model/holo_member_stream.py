@@ -10,18 +10,15 @@ from app.model import Base
 class HoloMemberStream(Base):
     __tablename__ = 'holo_member_stream'
 
-    id = Column(Integer, primary_key=True)
-
     member_id = Column(Integer, ForeignKey('holo_member.index'))
     member = relationship("HoloMember", backref="holo_member_stream")
 
     # item.id.videoId
     video_id = Column(String(50), nullable=False)
-    # item.id.videoId
-    video_id = Column(String(50), nullable=False)
 
     start_date = Column(DATE, nullable=True)
     end_date = Column(DATE, nullable=True)
+
     #
     # pageInfo.totalResults
     # pageInfo.resultsPerPage
@@ -56,6 +53,10 @@ class HoloMemberStream(Base):
     @classmethod
     def get_name(cls):
         return HoloMemberStream.name
+
+    @classmethod
+    def find_by_name(cls, session, name):
+        return session.query(cls).filter(cls.member == name).one()
 
 
     FIELDS = {"id": str, "email": str, "name": str, "start_date": DATE,"end_date": DATE }
