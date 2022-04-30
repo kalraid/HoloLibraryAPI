@@ -1,28 +1,32 @@
-import logging
-
-import requests
+import platform
+from collections import defaultdict
 import time
+
 import pandas as pd
-from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver import Chrome
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from sqlalchemy.orm import scoped_session
+
+from app.database import get_session
+from app.model import HoloMember
+
+db_session = get_session()
 
 
 def get_youtube_data():
+    start = time.time()  # 시작 시간 저장
 
     options = webdriver.ChromeOptions()
 
-    youtube_url = "https://schedule.hololive.tv/lives"
+    site_url = "https://schedule.hololive.tv/lives"
 
     # 스케줄표를 기준으로 데이터를 작은 원형 케릭터로 출력
 
     # 창 숨기기
-    options.add_argument("headless")
+    # options.add_argument("headless")
 
     # 프록시 사용
-    PROXY_ADDRESS = "111.111.111.111:9999" # IP:Port #변경 필요
+    PROXY_ADDRESS = "111.111.111.111:9999"  # IP:Port #변경 필요
 
     webdriver.DesiredCapabilities.CHROME['proxy'] = {
         "httpProxy": PROXY_ADDRESS,
@@ -35,12 +39,16 @@ def get_youtube_data():
     writer = pd.ExcelWriter('airpage.xlsx', engine='openpyxl')
 
     # 드라이버 설정 (드라이버가 있는 경로를 정확하게 지정 필요)
-    browser = webdriver.Chrome("./chromedriver.exe", options=options)
+    if platform.platform() == 'Linux':
+        fileName = "../resources/driver/chromedriver"
+    else:
+        fileName = "../resources/driver/chromedriver.exe"
 
-    delay = 1
+    browser = webdriver.Chrome(fileName, options=options)
+    delay = 5
     browser.implicitly_wait(delay)
 
-    target_url  = youtube_url + "/c/dlwlrma/featured" # iu
+    target_url = site_url
 
     browser.get(target_url)
 
@@ -48,68 +56,48 @@ def get_youtube_data():
     browser.maximize_window()
     browser.implicitly_wait(delay)
 
-    # 동영상 탭 클릭
-    browser.implicitly_wait(delay)
-    browser.find_element_by_xpath('//*[@id="tabsContent"]/tp-yt-paper-tab[2]').click()
+    # $('main >> .container').find('a') -> for -> href (주소),
+    tab_content = browser.find_elements_by_class_name('tab-pane')[0]
+    containers = tab_content.find_elements_by_xpath("./child::*")
+    date_list = []
+    schedule_date = ''
 
-    body = browser.find_element_by_tag_name('body')
+    alinks = []
+    for i in containers:
+        children = i.find_elements_by_xpath("./child::*")
+        for row in children:
+            navbar = row.find_elements_by_class_name('navbar')
+            if navbar:
+                schedule_date = navbar[0].text.split(' ')[0]
 
-    # 스크롤을 한참 내려서 (가능하면 큰 수) body 내용 확보하기
-    scroll_count = 250
-    while scroll_count:
-        body.send_keys(Keys.PAGE_DOWN)
-        browser.implicitly_wait(delay)
-        scroll_count -= 1
+            for a in row.find_elements_by_tag_name('a'):
+                data = defaultdict()
+                split_data = a.text.split('\n')
+                data['time'], data['name'], data['link'] = split_data[0], split_data[1], a.get_attribute('href')
+                data['live'] = 'border: 3px solid red;' in i.get_attribute('style')
+                data['date'] = schedule_date
 
-    html0 = browser.page_source
-    html = BeautifulSoup(html0,'html.parser')
+                alinks.append(data)
 
-    # 영상 목록 획득
-    video_datas = html.find_all('ytd-grid-video-renderer',{'class':'style-scope ytd-grid-renderer'})
+    print("time :", time.time() - start)  # 현재시각 - 시작시간 = 실행 시간  98초 약 2분 3~4분 마다 한번씩 돌면 될 듯
+    print(alinks)
 
-    video_url_list = []
-    for i in range(len(video_datas)):
-        url = youtube_url + video_datas[i].find('a',{'id':'thumbnail'})['href']
-        video_url_list.append(url)
+    save_youtube_live(alinks, db_session)
 
-    dataframe = pd.DataFrame({ 'name':[], 'view_count':[], 'youtube_url':[], 'date':[], 'desc' : [] })
+def save_youtube_live(live_links : list, db_session : scoped_session):
+    for i in live_links:
+        query = db_session.query(HoloMember)
+
+        name = i.get('name')
+        if 'a' <= name[0] <= "z" or 'A' <= name[0] <='Z': # name eng ( id or EN )
+            name = name.lower()
+            member = query.filter(HoloMember.member_name_eng.like('%'+name+'%')).one()
+        else: # name is not english -> JP
+            member = query.filter(HoloMember.member_name_jp.like('%'+name+'%')).one()
+
+        pass
 
 
-    for i in range(3):
-        #for i in range(len(video_datas)):
-        name = video_datas[i].find('a',{'id':'video-title'}).text
-        url = youtube_url + video_datas[i].find('a',{'id':'thumbnail'})['href']
-        for_view_count =video_datas[i].find('div',{'id':'metadata-line'})
-        view_count = for_view_count.find_all('span',{'class':'style-scope ytd-grid-video-renderer'})[0].text.split()[1]
-
-        cur_url = video_url_list[i]
-        browser.get(cur_url)
-        time.sleep(5)
-
-        body = browser.find_element_by_tag_name('body')
-
-        body.send_keys(Keys.PAGE_DOWN)
-        time.sleep(5)
-
-        html0 = browser.page_source
-        html = BeautifulSoup(html0,'html.parser')
-
-        moreBtn = browser.find_element_by_xpath('//*[@class="more-button style-scope ytd-video-secondary-info-renderer"]')
-        try:
-            if moreBtn is not None:
-                moreBtn.click()
-        except:
-            pass
-
-        r_date = html.find('div',{'id':'info-strings'}).find('yt-formatted-string').text
-        desc = html.find_all('yt-formatted-string',{'class' : 'content style-scope ytd-video-secondary-info-renderer'})[0].text
-        insert_data = pd.DataFrame({ 'name':[name], 'view_count':[view_count], 'youtube_url':[url], 'date':[r_date], 'desc' : [desc] })
-        # dataframe = dataframe.append(insert_data)
-        # dataframe.to_excel(writer, index=False)
-        # writer.save()
-        print("Crawled : " + str(i))
-        print("Crawled : " + insert_data)
-
-    # writer.save()
+    pass
 
 get_youtube_data()

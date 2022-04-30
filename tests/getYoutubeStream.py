@@ -79,7 +79,8 @@ def get_crawling_youtube_list_to_url_strs(channel_url, before_video_size):
     return ','.join(video_url_list)
 
 
-def get_youtube_data_by_url_strs():
+def get_youtube_data_by_url_strs(video_url_list):
+    logging.info(video_url_list)
     pass
 
 

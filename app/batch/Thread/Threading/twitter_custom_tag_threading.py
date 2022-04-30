@@ -21,4 +21,5 @@ class TwitterCustomTagThreading(threading.Thread):
         super().__init__()
 
     def run(self):
-        twitter_custom_tag_run()
+        # twitter_custom_tag_run() # 2022-04-29 custom tag will remove
+        pass

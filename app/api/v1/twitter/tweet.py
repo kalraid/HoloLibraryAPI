@@ -426,7 +426,6 @@ class RenewerDraws(BaseResource):
         filters = {}
 
         alias = SessionCommonAlias.ban_images(self, session)
-        LOG.info(alias)
 
         if 'tagType' in params and params['tagType']:
             tagType = params['tagType']

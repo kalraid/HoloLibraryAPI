@@ -50,8 +50,13 @@ class Worker(threading.Thread):
 def twitter_subthread():
     LOG.info("twitter_run start")
 
+    # 홀로 멤버 트위터 id 리스트
     account = HoloMemberTwitterInfo().get_twitter_ids(db_session)
+
+    # HoloMemberTwitterHashtag 중 isUse 가 N인 리스트
     ban_tags = HoloMemberTwitterHashtag().get_group_by_hashtag_not_use(db_session)
+
+    # 스트림 호출
     stream = twitter_api.GetStreamFilter(follow=account, filter_level="low")
     twitter_api.GetUserStream()
 
@@ -60,15 +65,18 @@ def twitter_subthread():
             for tweets in stream:
                 if "user" in tweets and "id" in tweets["user"]:
                     twitter_id = str(tweets["user"]["id"])
+
+                    # 멤버 계정이 적은 트윗인 경우만
                     if twitter_id in account:
-                        index = account.index(twitter_id)
+                        # 받아온 트윗 내용을 DB 저장을 위한 HoloMemberTweet 객체로 전환
                         tweet_parse_result = tweet_parse(tweets, ban_tags)
                         # LOG.info("tweet_parse_result : {}".format(tweet_parse_result))
+
                         if tweet_parse_result:
                             db_session.add(tweet_parse_result)
-                            # test_list.append({tweet_parse_result})
                             db_session.commit()
 
+                            # 받아온 트윗을 socket을 통해 서버로 전달할 데이터 객체
                             sending_data = {"tweet_id": tweet_parse_result.tweet_id,
                                             "member_id": tweet_parse_result.holo_member_twitter_info.member_id}
                             sending_list.append(sending_data)
@@ -79,11 +87,21 @@ def twitter_subthread():
             stream = twitter_api.GetStreamFilter(follow=account, filter_level="low")
             twitter_api.GetUserStream()
         except TwitterError as ex:  # Exceeded connection limit for user
-            time.sleep(1 * 60 * 5)  # 5 minutes
+            time.sleep(60 * 2)  # 2 minutes 대기
             LOG.error(traceback.format_exc())
-            LOG.error(stream)
+            LOG.error(str(stream))
+
+            # 스트림 재시작
             stream = twitter_api.GetStreamFilter(follow=account, filter_level="low")
             twitter_api.GetUserStream()
+
+            # 문제된 세션 종료 후 다시 받아오기
+            try:
+                db_session.close()
+            except Exception as ex:
+                LOG.error(ex)
+
+            db_session = get_session()
 
 
 async def init_websocket():
@@ -92,7 +110,7 @@ async def init_websocket():
         try:
             async with websockets.connect("ws://"+BACK_SERVER_URL+":8000/v1/member/tweet/live", subprotocols=["live_tweet"],
                                           ping_interval=10, ping_timeout=60 * 60) as ws:
-                LOG.info("twitter_custom_tag_run websocket standing ")
+                LOG.info("twitter websocket standing ")
                 while True:
                     try:
                         if len(sending_list) > 0:
