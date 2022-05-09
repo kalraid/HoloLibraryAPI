@@ -33,8 +33,8 @@ if __name__ == "__main__":
     twitterThreading.start()
     twitterTagthreading = BatchThreading.TwitterTagThreading()
     twitterTagthreading.start()
-    twitterCustomTagthreading = BatchThreading.TwitterCustomTagThreading()
-    twitterCustomTagthreading.start()
+    # twitterCustomTagthreading = BatchThreading.TwitterCustomTagThreading()
+    # twitterCustomTagthreading.start()
     dataInitThreading = BatchThreading.DataInitThreading()
     dataInitThreading.start()
 
