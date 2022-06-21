@@ -27,7 +27,7 @@ twitter_api = twitter.Api(consumer_key=CONST.TWITTER_CONSUMER_KEY,
 import json
 
 account = ["8803178971249188864", "1433414457179312128"]
-output_file_name = "../../../../tests/stream_tag_result.txt"
+output_file_name = "../../../../tests/unit/stream_tag_result.txt"
 db_session = get_session()
 test_list = []
 LOG = log.get_logger()
@@ -106,7 +106,7 @@ def twitter_tag_run():
                 stream = twitter_api.GetStreamFilter(track=tags, filter_level="low")  # tags len max is 250
                 twitter_api.GetUserStream()
             except TwitterError as ex:  # Exceeded connection limit for user
-                time.sleep(1 * 60 * 5)  # 5 minutes
+                time.sleep(1 * 60 * 11)  # 5 minutes
                 LOG.error(traceback.format_exc())
                 LOG.error(stream)
                 ban_tags = HoloMemberTwitterHashtag().get_group_by_hashtag_not_use(db_session)

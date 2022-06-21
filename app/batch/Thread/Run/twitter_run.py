@@ -4,6 +4,9 @@ from datetime import datetime
 import traceback
 import time
 
+from pymysql import IntegrityError
+from sqlalchemy.exc import PendingRollbackError
+
 from app.config import BACK_SERVER_URL
 
 import websockets, asyncio, threading
@@ -13,7 +16,7 @@ from websockets.exceptions import ConnectionClosed
 import log
 from app.batch.Thread.Service.twitter_parser import tweet_parse
 from app.const import CONST
-from app.database import get_session
+from app.database import get_session, new_session
 from app.model import HoloMemberTwitterInfo, HoloMemberTwitterHashtag
 
 import twitter
@@ -24,7 +27,6 @@ twitter_api = twitter.Api(consumer_key=CONST.TWITTER_CONSUMER_KEY,
                           access_token_secret=CONST.TWITTER_ACCESS_SECRET)
 
 account = ["8803178971249188864", "1433414457179312128"]
-db_session = get_session()
 sending_list = []
 LOG = log.get_logger()
 
@@ -48,6 +50,8 @@ class Worker(threading.Thread):
 
 
 def twitter_subthread():
+    db_session = get_session()
+
     LOG.info("twitter_run start")
 
     # 홀로 멤버 트위터 id 리스트
@@ -81,13 +85,9 @@ def twitter_subthread():
                                             "member_id": tweet_parse_result.holo_member_twitter_info.member_id}
                             sending_list.append(sending_data)
                             LOG.info(" ----| sending_list data insert |----")
-        except Exception as ex:
-            LOG.error(traceback.format_exc())
-            LOG.error(stream)
-            stream = twitter_api.GetStreamFilter(follow=account, filter_level="low")
-            twitter_api.GetUserStream()
+
         except TwitterError as ex:  # Exceeded connection limit for user
-            time.sleep(60 * 2)  # 2 minutes 대기
+            time.sleep(60 * 11)  # 11 minutes 대기 ( 트위터 api 중에 종료요청이 없기에 의도적 타임 슬립으로 트위터에서 종료되게 해야됨 )
             LOG.error(traceback.format_exc())
             LOG.error(str(stream))
 
@@ -96,19 +96,27 @@ def twitter_subthread():
             twitter_api.GetUserStream()
 
             # 문제된 세션 종료 후 다시 받아오기
-            try:
-                db_session.close()
-            except Exception as ex:
-                LOG.error(ex)
+            # db_session = get_session()
+            db_session = new_session(db_session)
+        except IntegrityError or PendingRollbackError as ex:  # tweet_id 중복 나는 경우  스트림이 터진건 아니기에 유지
+            LOG.error(traceback.format_exc())
+            LOG.error(ex)
 
-            db_session = get_session()
+            # 문제된 세션 종료 후 다시 받아오기
+            # db_session = get_session()
+            db_session = new_session(db_session)
+
+        except Exception as ex:
+            LOG.error(traceback.format_exc())
+            LOG.error(stream)
 
 
 async def init_websocket():
     LOG.info("twitter_run init_websocket start ")
     while True:
         try:
-            async with websockets.connect("ws://"+BACK_SERVER_URL+":8000/v1/member/tweet/live", subprotocols=["live_tweet"],
+            async with websockets.connect("ws://" + BACK_SERVER_URL + ":8000/v1/member/tweet/live",
+                                          subprotocols=["live_tweet"],
                                           ping_interval=10, ping_timeout=60 * 60) as ws:
                 LOG.info("twitter websocket standing ")
                 while True:

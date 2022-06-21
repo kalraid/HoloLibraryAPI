@@ -57,7 +57,7 @@ def tweet_parse(tweet, ban_tags) -> HoloMemberTweet:
             entities["media"] = extend["media"]
 
     # 트윗 맨션 ( 타 트윗 닉네임 호출시 ) 저장 -> 추후 멤버간 감정분석 기초 자료
-    if entities is not None and "user_mentions" in entities and entities["user  _mentions"]:
+    if entities is not None and "user_mentions" in entities and entities["user_mentions"]:
         mentions = []
         for i in entities["user_mentions"]:
             holoMemberTwitterMention = HoloMemberTwitterMention()

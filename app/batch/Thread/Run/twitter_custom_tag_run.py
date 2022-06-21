@@ -16,7 +16,7 @@ twitter_api = twitter.Api(consumer_key=CONST.TWITTER_CONSUMER_KEY,
                           access_token_secret=CONST.TWITTER_ACCESS_SECRET)
 
 account = ["8803178971249188864", "1433414457179312128"]
-output_file_name = "../../../../tests/stream_tag_result.txt"
+output_file_name = "../../../../tests/unit/stream_tag_result.txt"
 db_session = get_session()
 LOG = log.get_logger()
 

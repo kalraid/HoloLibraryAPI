@@ -40,9 +40,9 @@ def get_youtube_data():
 
     # 드라이버 설정 (드라이버가 있는 경로를 정확하게 지정 필요)
     if platform.platform() == 'Linux':
-        fileName = "../resources/driver/chromedriver"
+        fileName = "../../resources/driver/chromedriver"
     else:
-        fileName = "../resources/driver/chromedriver.exe"
+        fileName = "../../resources/driver/chromedriver.exe"
 
     browser = webdriver.Chrome(fileName, options=options)
     delay = 5

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import asyncio
+import sys
 
 import falcon.asgi
 
@@ -29,6 +31,9 @@ if __name__ == "__main__":
     # httpd.serve_forever()
     import app.batch.Thread.Threading as BatchThreading
 
+    if sys.platform == 'win32':
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
     twitterThreading = BatchThreading.TwitterThreading()
     twitterThreading.start()
     twitterTagthreading = BatchThreading.TwitterTagThreading()
@@ -43,5 +48,4 @@ if __name__ == "__main__":
     uvicorn.run(application, host="0.0.0.0", port=8001, log_level="info")
 
 if __name__ == '__exit__':
-
     LOG.info('Threading all stop')

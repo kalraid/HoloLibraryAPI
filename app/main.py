@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import asyncio
+import sys
 
 import falcon.asgi
 
@@ -74,6 +76,8 @@ if __name__ == "__main__":
     # httpd.serve_forever()
 
     import uvicorn
+    if sys.platform == 'win32':
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
     uvicorn.run(application, host="0.0.0.0", port=8000, log_level="info", ws_ping_interval=10,
                 ws_ping_timeout=60 * 60, timeout_keep_alive=60 * 5)

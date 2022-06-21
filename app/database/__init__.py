@@ -32,16 +32,23 @@ def get_engine(uri):
     return create_engine(uri, **options)
 
 
-db_session = scoped_session(sessionmaker())
 engine = get_engine(config.DATABASE_URL)
+db_session = scoped_session(sessionmaker(bind=engine))
 
 
 def get_session():
     return db_session
 
+def new_session(db_session):
+    try:
+        db_session.close()
+    except Exception as ex:
+        LOG.error(ex)
+
+    return get_session()
 
 def init_session():
-    db_session.configure(bind=engine)
+    # db_session.configure(bind=engine)
 
     __init_table__()
     init_data()
