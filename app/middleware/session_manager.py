@@ -19,6 +19,9 @@ class DatabaseSessionManager(object):
         """
         Handle post-processing of the response (after routing).
         """
+        ## TODO 현재부분에서 __init__에 scopefunc에 값이 안들어가기때문에 비동기 처리가 되지 않음
+        ## https://www.hides.kr/m/1081
+        ## Session = scoped_session(sessionmaker(), scopefunc=get_current_tornado_request)
         req.context["session"] = self._session_factory
 
     async def process_response(self, req, res, resource=None, req_succeeded=None):
