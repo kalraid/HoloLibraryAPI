@@ -66,7 +66,7 @@ class DenyCrawlers(object):
 
 
 init_session()
-middleware = [CORSMiddleware(), AuthHandler(), JSONTranslator(), DatabaseSessionManager(db_session), WebsocketHandler()]
+middleware = [CORSMiddleware(), AuthHandler(), JSONTranslator(), DatabaseSessionManager(), WebsocketHandler()]
 application = App(middleware=middleware, cors_enable=True)
 
 if __name__ == "__main__":

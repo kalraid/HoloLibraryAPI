@@ -12,9 +12,9 @@ from .init_holo_member_ch import get_channel_data
 from .init_holo_member_img import get_member_img_data
 from .init_holo_member_twitter import get_twitter_data
 from .init_holo_member_twitter_tags import get_twitter_tags_data
+from .init_twitter_banner import get_twitter_banner
 from .init_youtube_banner import get_youtube_banner
 from .init_youtube_stream_list import get_youtube_data
-from .init_twitter_banner import get_twitter_banner
 
 LOG = log.get_logger()
 
@@ -35,8 +35,13 @@ def get_engine(uri):
 engine = get_engine(config.DATABASE_URL)
 db_session = scoped_session(sessionmaker(bind=engine))
 
+def get_engine():
+    return engine
 
-def get_session():
+def get_scoped_session(key) -> scoped_session:
+    return scoped_session(sessionmaker(bind=engine),scopefunc=key)
+
+def get_session() -> scoped_session:
     return db_session
 
 def new_session(db_session):
